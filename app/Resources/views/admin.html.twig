@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+
+{% block stylesheets %}
+<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block contentContainerDiv %}
+<div class="content-container radius-bordered general-text2">
+{% endblock %}
+{% block userContent %}
+<div class="user-container radius-bordered general-text2">
+	<p>Admin control panel:</p>
+	<ul class="nav-bar">
+		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="/manageMovies">Manage Movies</a></li>
+		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="/manageUsers">Manage Users</a></li>
+		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="#">View rental report</a></li>
+	</ul>
+</div>
+{% endblock %}
+{% block content %}
+<p>Welcome admin {{ user.userName }}! in the left sidebar you'll find your control panel</p>
+{% endblock %}

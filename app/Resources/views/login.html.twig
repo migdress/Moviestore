@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+{% block content %}
+<h2 class="general-text">Welcome! Login to your Movieland Account</h2>
+<br>
+<form action="/loginAttempt" method="post">
+	<table>
+		<tr>
+			<td>Login:</td>
+			<td><input type="text" name="login"></td>
+		</tr>
+		<tr>
+			<td>Password:</td>
+			<td><input type="password" name="password"></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input class="formTable general-text"
+				type="submit" name="submit" value="Login">
+		</tr>
+	</table>
+</form>
+
+{% endblock %}

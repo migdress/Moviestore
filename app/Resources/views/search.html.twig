@@ -1,0 +1,15 @@
+{% extends "account.html.twig" %}
+{% block content %}
+<h3 class="general-text">Search for movies..</h3>
+<form action="/searchFor2" method="post">
+	<table>
+		<tr>
+			<td>Search: </td>
+			<input type="text" name="searchString">
+			<td colspan="2" class="">
+				<input type="submit" class="formTable general-text">
+			</td>
+		</tr>
+	</table>
+</form>
+{% endblock %}

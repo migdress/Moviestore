@@ -1,0 +1,48 @@
+{% extends "account.html.twig" %}
+{% block content %}
+<p>Result:</p>
+<table class="movies">
+	<tr class="movies">
+		<th class="movies">Id</th>
+		<th class="movies">Name</th>
+		<th class="movies">Genre</th>
+		<th class="movies">Description</th>
+		<th class="movies">Status</th>
+		<th class="movies">Actions</th>
+	</tr>
+	{% if moviesFound %}
+    	{% for movie in moviesFound %}
+    		<tr class="movies">
+    			<td class="movies">{{ movie.movieId }}</td>
+    			<td class="movies">{{ movie.movieName}}</td>
+    			{% for genre in genres %}
+        		    {% if genre.genreId == movie.genreId %}
+            			<td class="movies">{{  genre.genreName}}</td>
+        		    {% endif %}
+    		    {% endfor %}
+    			<td class="movies">{{ movie.MovieDesc}}</td>
+		        {% if rentals  %}
+        		    {% for rental in rentals %}
+    	    		    {% if rental.movieId == movie.movieId %}
+        				    {% if rental.rentalStatus == "VALID" %}
+            					<td class="movies">RENTED</td>
+            				{% else %}
+        						<td class="movies">AVAILABLE</td>
+            		        {% endif %}
+        		        {% else %}
+        		        	<td class="movies">AVAILABLE</td>
+    		            {% endif %}
+                    {% endfor %}	
+	            {% else %}
+				<td class="movies">AVAILABLE</td>
+		        {%endif %}
+				<td class="movies"><a
+			class="actionButton general-text radius-bordered"
+			href="{{ path("rentMovie", {'movieId':movie.movieId, 'userId':user.userId}) }}">Rent</a>
+				</td>
+			</tr>
+	{% endfor %}
+	{% endif %}
+</table>
+
+{% endblock %}

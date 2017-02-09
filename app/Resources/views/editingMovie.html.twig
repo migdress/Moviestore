@@ -1,0 +1,57 @@
+{% extends "admin.html.twig" %}
+
+{% block stylesheets %}
+<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block contentContainerDiv %}
+<div class="content-container radius-bordered general-text2">
+	{% endblock %}
+	{% block content %}
+	<div class="box radius-bordered">
+		<h3 class="general-text">Editing movie</h3>
+		<form action="/updateMovie" method="post">
+			<table>
+				<tr>
+					<td>Movie Id:</td>
+					<td><input type="text" name="updateMovieId"
+						value="{{ movie.movieId }}"></td>
+				</tr>
+				<tr>
+					<td>Movie name:</td>
+					<td><input type="text" name="updateMovieName"
+						value="{{ movie.movieName }}"></td>
+				</tr>
+				<tr>
+					<td>Movie genre:</td>
+
+					<td><select name="updateMovieGenre">
+							{% for genre in genres %}
+							{% if movie.genreId == genre.genreId %}
+							<option selected="selected" value="{{ genre.genreId }}">
+								{{ genre.genreName }}</option>
+							{% else %}
+							<option value="{{ genre.genreId }}">
+								{{ genre.genreName }}</option>
+							{% endif %}
+							{% endfor %}
+					</select></td>
+				</tr>
+				<tr>
+					<td colspan="2">Movie Description (up to 150 characters):</td>
+				</tr>
+				<tr>
+					<td colspan="2"><textarea rows="5" cols="40"
+							name="updateMovieDesc">{{ movie.movieDesc }}</textarea></td>
+				</tr>
+				<tr>
+					<td><input type="submit"
+						class="formTable general-text radius-bordered" value="Update"></td>
+
+					<td><a href="{{ path("manageMovies") }}"
+						class="nav-bar-item radius-bordered general-text">Cancel</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	{% endblock %}

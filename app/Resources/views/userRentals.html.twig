@@ -1,0 +1,33 @@
+{% extends "account.html.twig" %}
+{% block content %}
+<h3 class="general-text">My rentals</h3>
+<table class="movies">
+			<tr class="movies">
+				<th class="movies">Movie name</th>
+				<th class="movies">Init date</th>
+				<th class="movies">End Date</th>
+				<th class="movies">Status</th>
+				<th class="movies">Actions</th>
+			</tr>
+			{% if userRentals %}
+			{% for rental in userRentals %}
+			<tr class="movies">
+				<td class="movies">
+					{% for movie in movies %}
+						{% if movie.movieId == rental.movieId %}
+							{{ movie.moviename }}
+						{% endif %}
+					{% endfor %}
+				</td>
+				<td> {{ rental.rentalInitDate }} </td>
+				<td> {{ rental.rentalEndDate }} </td>
+				<td> {{ rental.rentalStatus }} </td>
+				<td> <a
+					class="actionButton general-text radius-bordered"
+					href="{{ path("retrieveMovie", {'rentalId':rental.rentalId}) }}">Rent</a>
+					</td>
+			</tr>
+			{% endfor %}
+			{% endif %}
+		</table>
+{% endblock %}

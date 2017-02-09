@@ -1,0 +1,180 @@
+/*-------------------------GOBAL CLASSES & ELEMENTS---------------------*/
+html {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: #2d7991;
+}
+
+.general-text {
+	color: #ffb600;
+	text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black;
+}
+
+.general-text3 {
+	color: #ffffff;
+	text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black;
+}
+
+.general-text2 {
+	color: #ffffff;
+	text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.margin {
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.radius-bordered {
+	border-radius: 5px;
+}
+
+.flash-notice{
+	font-weight: bold;
+	background-color: #b9ff77; 
+}
+
+.flash-error{
+	font-weight: bold;
+	background-color: #ff7768;
+}
+
+/*------------------------HEADER CLASSES--------------------*/
+a.invisible{
+	text-decoration:none;
+}
+
+
+
+h1 {
+	font-size: 280%;
+	margin-bottom: -20px;
+}
+
+.header {
+	display: block;
+	background-color: #195466;
+	font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+	color: #ffb600;
+	text-shadow: 2px 0 black, 0 2px black, -2px 0 black, 0 -2px black;
+	text-align: center;
+	padding-bottom: 5px;
+}
+
+p.sub-header {
+	font-style: italic;
+	letter-spacing: 2px;
+}
+
+/*------------------------------------NAVIGATION BAR CLASSES--------------------------*/
+.nav-bar-container {
+	display: block;
+	text-align: center;
+	background-color: #195466;
+	padding: 10px 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+ul.nav-bar {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+/*desktop & tables*/
+@media only screen and (min-width: 500px) {
+	li.nav-bar-item {
+		display: inline;
+		text-align: center;
+		text-decoration: none;
+	}
+	a.nav-bar-item {
+		text-align: center;
+		padding: 10px 10px;
+		text-decoration: none;
+		text-transform: uppercase;
+		font-family: "Trebuchet MS", Helvetica, sans-serif;
+		background-color: #023342;
+	}
+}
+
+
+/*mobile phones*/
+@media only screen and (max-width: 500px) {
+	li.nav-bar-item {
+		text-align: center;
+		text-decoration: none;
+	}
+	a.nav-bar-item {
+		display: block;
+		text-align: center;
+		padding: 5px 5px;
+		text-decoration: none;
+		text-transform: uppercase;
+		font-family: "Trebuchet MS", Helvetica, sans-serif;
+		background-color: #023342;
+	}
+}
+
+a:hover.nav-bar-item {
+	background-color: #FAFAFA;
+}
+
+a:active.nav-bar-item {
+	background-color: #4286f4;
+	text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black;
+}
+
+/*------------------------------------BODY CONTENT CLASSES--------------------------*/
+h2 {
+	margin-bottom: -10px;
+	text-shadow: 1.5px 0 black, 0 1.5px black, -1.5px 0 black, 0 -1.5px
+		black;
+}
+
+.content-container {
+	text-align: justify;
+	padding: 10px 5% 5% 5%;
+	display: block;
+	background-color: #195466;
+}
+
+/*-------------------------------------FOOTER CLASSES--------------------------------*/
+.footer {
+	display: block;
+	text-align: center;
+	margin-top: 10px;
+	padding: 1px;
+	background-color: #195466;
+}
+
+a:visited.general-text {
+	color: #ffb600;
+}
+
+
+/*-------------------------------------FORM TABLE CLASSES--------------------------------*/
+table.formTable{
+	border: none;
+}
+
+td.formTable{
+}
+
+input.formTable{
+	width: 100%;
+	background-color: #023342;
+	border: none;
+	padding: 10px 10px;
+	text-transform: uppercase;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+input:hover.formTable{
+	background-color: #FAFAFA;
+}
