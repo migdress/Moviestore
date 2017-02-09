@@ -24,6 +24,14 @@ class DefaultController extends Controller {
 	public function loginAction(Request $request) {
 		return $this->render ( "login.html.twig" );
 	}
+        
+        /**
+	 * @Route("/register", name="register")
+	 */
+	public function registerAction(Request $request) {
+		return $this->render ( "register.html.twig" );
+	}
+        
 	
 	/**
 	 * @Route("/loginAttempt", name="loginAttempt")
