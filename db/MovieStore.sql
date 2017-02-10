@@ -57,7 +57,7 @@ create table USER
    USER_NAME            varchar(30) not null,
    USER_LASTNAME        varchar(30) not null,
    USER_LOGIN           varchar(30) not null,
-   USER_PASSWORD        varchar(30) not null,
+   USER_PASSWORD        varchar(80) not null,
    USER_TYPE            varchar(10) not null,
    primary key (USER_ID)
 );

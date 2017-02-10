@@ -21,4 +21,52 @@ class Genre {
 	 */
 	private $genre_name;
 	
+
+    /**
+     * Set genreId
+     *
+     * @param integer $genreId
+     *
+     * @return Genre
+     */
+    public function setGenreId($genreId)
+    {
+        $this->genre_id = $genreId;
+
+        return $this;
+    }
+
+    /**
+     * Get genreId
+     *
+     * @return integer
+     */
+    public function getGenreId()
+    {
+        return $this->genre_id;
+    }
+
+    /**
+     * Set genreName
+     *
+     * @param string $genreName
+     *
+     * @return Genre
+     */
+    public function setGenreName($genreName)
+    {
+        $this->genre_name = $genreName;
+
+        return $this;
+    }
+
+    /**
+     * Get genreName
+     *
+     * @return string
+     */
+    public function getGenreName()
+    {
+        return $this->genre_name;
+    }
 }

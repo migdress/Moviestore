@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="rental")
+ * @ORM\Table(name="RENTAL")
  */
 class Rental {
 	
@@ -23,19 +23,18 @@ class Rental {
 	
 	/**
 	 * @ORM\Column(type="integer")
-	 * @ORM\Id
+         * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="AUTO")
 	 */
 	private $rental_id;
 	
 	/**
-	 * @ORM\Column(type="string", length=30)
-	 * 
+	 * @ORM\Column(type="date")
 	 */
 	private $rental_initDate;
 	
 	/**
-	 * @ORM\Column(type="string", length=30)
+	 * @ORM\Column(type="date")
 	 */
 	private $rental_endDate;
 	
