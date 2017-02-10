@@ -258,6 +258,14 @@ td.status-NOT-AVAILABLE{
 }
 
 td.movies{
+        /*max-width: 10%;*/
+	border-collapse: collapse;
+	border: 2px solid white;
+	padding: 5px;
+}
+
+td.moviesDesc{
+        max-width: 150px;
 	border-collapse: collapse;
 	border: 2px solid white;
 	padding: 5px;

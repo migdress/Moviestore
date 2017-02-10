@@ -3,7 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\ORM\EntityManager;
 
 /**
  * @ORM\Entity
@@ -129,5 +129,65 @@ class Movie {
     public function getMovieDesc()
     {
         return $this->movie_desc;
+    }
+    
+    /*Register Movie*/
+    public static function register($genre_id, $movie_name, $movie_desc, EntityManager $em){
+        $movie = new Movie();
+        $movie->setGenreId($genre_id);
+        $movie->setMovieName($movie_name);
+        $movie->setMovieDesc($movie_desc);
+        Movie::registerToDB($movie, $em);
+        return 1;
+    }
+    
+    public static function update($movie_id, $genre_id, $movie_name, $movie_desc, EntityManager $em){
+        $movie = Movie::getTheMovie($movie_id, $em);
+        $movie->setGenreId($genre_id);
+        $movie->setMovieName($movie_name);
+        $movie->setMovieDesc($movie_desc);
+        $em->flush();
+        return 1;
+    }
+    
+    public static function remove($movie_id, EntityManager $em){
+        $movie = Movie::getTheMovie($movie_id, $em);
+        $em->remove($movie);
+        $em->flush();
+        return 1;
+    }
+    
+    
+    /* Fetching all the movies */
+    public static function getAllMovies(EntityManager $em) {
+        $moviesRepository = $em->getRepository("AppBundle:Movie");
+        $movies = $moviesRepository->findAll();
+        if ($movies) {
+            return $movies;
+        } else {
+            return null;
+        }
+    }
+    
+    /*Fetching one movie by Id*/
+    public static function getTheMovie($movieId, EntityManager $em) {
+        $moviesRepository = $em->getRepository("AppBundle:Movie");
+        $movie = $moviesRepository->find($movieId);
+        if ($movie) {
+            return $movie;
+        } else {
+            return null;
+        }
+    }
+    
+    /* Register any object to DB */
+    public static function registerToDB($object, EntityManager $em) {
+        try {
+            $em->persist($object);
+            $em->flush();
+        } catch (Exeption $e) {
+            return false;
+        }
+        return true;
     }
 }

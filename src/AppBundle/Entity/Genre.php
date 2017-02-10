@@ -3,7 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\ORM\EntityManager;
 
 /**
  * @ORM\Entity
@@ -68,5 +68,27 @@ class Genre {
     public function getGenreName()
     {
         return $this->genre_name;
+    }
+    
+    /* Fetching all the genres */
+    public static function getAllGenres(EntityManager $em) {
+        $genresRepository = $em->getRepository("AppBundle:Genre");
+        $genres = $genresRepository->findAll();
+        if ($genres) {
+            return $genres;
+        } else {
+            return null;
+        }
+    }
+    
+    /* Register any object to DB */
+    public static function registerToDB($object, EntityManager $em) {
+        try {
+            $em->persist($object);
+            $em->flush();
+        } catch (Exeption $e) {
+            return false;
+        }
+        return true;
     }
 }

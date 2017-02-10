@@ -23,7 +23,9 @@ class DefaultController extends Controller {
      * @Route("/login", name="login")
      */
     public function loginAction(Request $request) {
-        return $this->render("login.html.twig");
+        return $this->render("login.html.twig", array(
+            "constants" => Constants::get()
+        ));
     }
     
     /**
@@ -38,7 +40,9 @@ class DefaultController extends Controller {
      * @Route("/register", name="register")
      */
     public function registerAction(Request $request) {
-        return $this->render("register.html.twig");
+        return $this->render("register.html.twig", array(
+            "constants" => Constants::get()
+        ));
     }
 
 }

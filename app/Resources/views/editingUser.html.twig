@@ -1,0 +1,56 @@
+{% extends "admin.html.twig" %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block contentContainerDiv %}
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <h3 class="general-text">Editing user</h3>
+            <form action="/updateUser" method="post">
+                <table>
+                    <tr>
+                        <td>User id:</td>
+                        <td><input type="text" name="updateUserId" value="{{ user.userId}}"></td>
+                    </tr>
+                    <tr>
+                        <td>User name:</td>
+                        <td><input type="text" name="updateUserName" value="{{ user.userName}}"></td>
+                    </tr>
+                    <tr>
+                        <td>User lastname:</td>
+                        <td><input type="text" name="updateUserLastname" value="{{ user.userLastName}}"></td>
+                    </tr>
+                    <tr>
+                        <td>User login:</td>
+                        <td><input type="text" name="updateUserLogin" value="{{ user.userLogin}}"></td>
+                    </tr>
+                    <tr>
+                        <td>User NEW password:</td>
+                        <td><input type="password" name="updateUserPassword" placeholder="Let blank to not update"></td>
+                    </tr>
+                    <tr>
+                        <td>User type:</td>
+                        <td><select name="updateUserType">
+                                {% if user.userType == constant('USER_TYPE_ADMIN', constants) %}
+                                    <option value="CLIENT">Client</option>
+                                    <option selected = "selected" value="ADMIN">Admin</option>
+                                {% else%}
+                                    <option selected = "selected" value="CLIENT">Client</option>
+                                    <option value="ADMIN">Admin</option>
+                                {%endif%}
+                            </select></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit"
+                                               class="formTable general-text" value="Update"></td>
+                        <td><a href="{{ path("manageUsers") }}"
+						class="nav-bar-item radius-bordered general-text">Cancel</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endblock %}

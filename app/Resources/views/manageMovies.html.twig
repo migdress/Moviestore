@@ -1,113 +1,117 @@
 {% extends "admin.html.twig" %}
 
 {% block stylesheets %}
-<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block contentContainerDiv %}
-<div class="content-container radius-bordered general-text2">
-	{% endblock %}
-	{% block content %}
-	<div class="box radius-bordered">
-		<h3 class="general-text">All registered movies</h3>
-		<table class="movies">
-			<tr class="movies">
-				<th class="movies">Id</th>
-				<th class="movies">Name</th>
-				<th class="movies">Genre</th>
-				<th class="movies">Description</th>
-				<th class="movies">Status</th>
-				<th class="movies">Actions</th>
-			</tr>
-			{% if movies %}
-			{% for movie in movies %}
-			<tr class="movies">
-				<td class="movies">{{ movie.movieId }}</td>
-				<td class="movies">{{ movie.movieName}}</td>
-				{% for genre in genres %}
-				{% if genre.genreId == movie.genreId %}
-				<td class="movies">{{  genre.genreName}}</td>
-				{% endif %}
-				{% endfor %}
-				<td class="movies">{{ movie.MovieDesc}}</td>
-				{% if rentals  %}
-				{% for rental in rentals %}
-				{% if rental.movieId == movie.movieId %}
-				{% if rental.rentalStatus == "VALID" %}
-				<td class="movies">RENTED</td>
-				{% else %}
-				<td class="movies">AVAILABLE</td>
-				{% endif %}
-				{% else %}
-				<td class="movies">AVAILABLE</td>
-				{% endif %}
-				{% endfor %}
-				{% else %}
-				<td class="movies">AVAILABLE</td>
-				{%endif %}
-				<td class="movies"><a
-					class="actionButton general-text radius-bordered"
-					href="{{ path("rentMovie", {'movieId':movie.movieId, 'userId':user.userId}) }}">Rent</a>
-				</td>
-			</tr>
-			{% endfor %}
-			{% endif %}
-		</table>
-	</div>
-	<br>
-	<div class="box radius-bordered">
-		<h3 class="general-text">Register a new movie</h3>
-		<p>Please complete the form below to register a new movie</p>
-		<form action="/registerMovie" method="post">
-			<table>
-				<tr>
-					<td>Movie name:</td>
-					<td><input type="text" name="registerMovieName"></td>
-				</tr>
-				<tr>
-					<td>Movie genre:</td>
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <h3 class="general-text">All registered movies</h3>
+            <table class="movies">
+                <tr class="movies">
+                    <th class="movies">Id</th>
+                    <th class="movies">Name</th>
+                    <th class="movies">Genre</th>
+                    <th class="movies">Description</th>
+                    <th class="movies">Status</th>
+                    <th class="movies">Actions</th>
+                </tr>
+                {% if movies %}
+                    {% for movie in movies %}
+                        <tr class="movies">
+                            <td class="movies">{{ movie.movieId }}</td>
+                            <td class="movies">{{ movie.movieName}}</td>
+                            {% for genre in genres %}
+                                {% if genre.genreId == movie.genreId %}
+                                    <td class="movies">{{  genre.genreName}}</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td class="moviesDesc">{{ movie.MovieDesc}}</td>
+                            {% if rentals  %}
+                                {% for rental in rentals %}
+                                    {% if rental.movieId == movie.movieId %}
+                                        {% if rental.rentalStatus == "VALID" %}
+                                            <td class="movies">RENTED</td>
+                                        {% else %}
+                                            <td class="movies">AVAILABLE</td>
+                                        {% endif %}
+                                    {% else %}
+                                        <td class="movies">AVAILABLE</td>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <td class="movies">AVAILABLE</td>
+                            {%endif %}
+                            <td class="movies">
+                                <a
+                                    class="actionButton general-text radius-bordered"
+                                    href="{{ path("editMovie", {'movieId':movie.movieId}) }}">Edit</a>
+                                <a
+                                    class="actionButton general-text radius-bordered"
+                                    href="{{ path("removeMovie", {'movieId':movie.movieId}) }}">Remove</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+        <br>
+        <div class="box radius-bordered">
+            <h3 class="general-text">Register a new movie</h3>
+            <p>Please complete the form below to register a new movie</p>
+            <form action="/registerMovie" method="post">
+                <table>
+                    <tr>
+                        <td>Movie name:</td>
+                        <td><input type="text" name="registerMovieName"></td>
+                    </tr>
+                    <tr>
+                        <td>Movie genre:</td>
 
-					<td><select name="registerMovieGenre">
-							{% for genre in genres %}
-							<option value="{{ genre.genreId }}">
-								{{ genre.genreName }}</option>
-							{% endfor %}
-					</select></td>
-				</tr>
-				<tr>
-					<td colspan="2">Movie Description (up to 150 characters):</td>
-				</tr>
-				<tr>
-					<td colspan="2"><textarea rows="5" cols="40"
-							name="registerMovieDesc"></textarea></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="submit"
-						class="formTable general-text" value="Register"></td>
-				</tr>
-			</table>
-		</form>
-	</div>
-	<br>
+                        <td><select name="registerMovieGenre">
+                                {% for genre in genres %}
+                                    <option value="{{ genre.genreId }}">
+                                        {{ genre.genreName }}</option>
+                                    {% endfor %}
+                            </select></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Movie Description (up to 150 characters):</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><textarea rows="5" cols="40"
+                                                  name="registerMovieDesc"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit"
+                                               class="formTable general-text" value="Register"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <br>
 
-	<div class="box radius-bordered">
-		<h3 class="general-text">Edit a movie</h3>
-		<p>Please select the movie to edit from the drop-down list</p>
-		<form action="/editMovie" method="post">
-			<table>
-				<tr>
-					<td>Movie to edit:</td>
-					<td><select name="editMovieId">
-							{% for movie in movies %}
-							<option value="{{ movie.movieId }}">{{ movie.movieName}}</option>
-							{% endfor %}
-					</select></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="submit" value="Edit"
-						class="formTable general-text"></td>
-				</tr>
-			</table>
-		</form>
-	</div>
-	{% endblock %}
+        <!--<div class="box radius-bordered">
+            <h3 class="general-text">Edit a movie</h3>
+            <p>Please select the movie to edit from the drop-down list</p>
+            <form action="/editMovie" method="post">
+                <table>
+                    <tr>
+                        <td>Movie to edit:</td>
+                        <td><select name="editMovieId">
+                                {% for movie in movies %}
+                                    <option value="{{ movie.movieId }}">{{ movie.movieName}}</option>
+                                {% endfor %}
+                            </select></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit" value="Edit"
+                                               class="formTable general-text"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>-->
+    {% endblock %}

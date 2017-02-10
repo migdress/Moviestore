@@ -23,11 +23,11 @@
                 <ul class="nav-bar">
                     <li class="nav-bar-item"><a href="/"
                                                 class="nav-bar-item general-text radius-bordered">Home</a></li>
-                    <li class="nav-bar-item"><a href="/joinUs"
-                                                class="nav-bar-item general-text radius-bordered">Join us</a></li>
                         {% if not app.Session.get("user")  %}
                         <li class="nav-bar-item"><a href="/login"
                                                     class="nav-bar-item general-text radius-bordered">Log in</a></li>
+                        <li class="nav-bar-item"><a href="/register"
+                                                    class="nav-bar-item general-text radius-bordered">Join us</a></li>
                         {% else %}
                             {% if app.Session.get("user").userType == constant('USER_TYPE_ADMIN', constants) %}
                             <li class="nav-bar-item"><a href="/admin"
@@ -36,7 +36,7 @@
                             <li class="nav-bar-item"><a href="/account"
                                                         class="nav-bar-item general-text radius-bordered">Account Panel</a></li>
                             {% endif %}                        
-                            <li class="nav-bar-item"><a href="/logout"
+                        <li class="nav-bar-item"><a href="/logout"
                                                     class="nav-bar-item general-text radius-bordered">Log out</a></li>
                         {% endif %}
                 </ul>

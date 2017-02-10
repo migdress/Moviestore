@@ -19,19 +19,18 @@ class UserController extends Controller {
     public function loginAttemptAction(Request $request) {
         $userLogin = $request->request->get("login");
         $userPassword = $request->request->get("password");
-        $user = new User($this->getDoctrine()->getManager());
-        $user = $user->login($userLogin, $userPassword);
+        $user = User::login($userLogin, $userPassword, $this->getDoctrine()->getManager());
         $pageToRender = "";
         if ($user) {
             $request->getSession()->set("user", $user);
-            $type = $user->getUserType();
-            if ($type == Constants::USER_TYPE_ADMIN) {
+            if ($user->getUserType() == Constants::USER_TYPE_ADMIN) {
                 $pageToRender = "admin.html.twig";
             } else {
                 $pageToRender = "account.html.twig";
             }
             return $this->render($pageToRender, array(
-                        "user" => $user
+                        "user" => $user,
+                        "constants" => Constants::get()
             ));
         } else {
             $this->addFlash("error", "Invalid data");
@@ -45,10 +44,10 @@ class UserController extends Controller {
     public function adminAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            if ($user->getUserType == Constants::USER_TYPE_ADMIN) {
-                /* $request->getSession()->set("user", $user); */
+            if ($user->getUserType() == Constants::USER_TYPE_ADMIN) {
                 return $this->render("admin.html.twig", array(
-                            "user" => $user
+                            "user" => $user,
+                            "constants" => Constants::get()
                 ));
             } else {
                 $this->addFlash("error", "Please login into your account");
@@ -65,17 +64,17 @@ class UserController extends Controller {
      */
     public function accountAction(Request $request) {
         $user = $request->getSession()->get("user");
-        if($user != null){
-        if ($user->getUserType == Constants::USER_TYPE_CLIENT) {
-            /* $request->getSession()->set("user", $user); */
-            return $this->render("account.html.twig", array(
-                        "user" => $user
-            ));
+        if ($user != null) {
+            if ($user->getUserType() == Constants::USER_TYPE_CLIENT) {
+                return $this->render("account.html.twig", [
+                            "user" => $user,
+                            "constants" => Constants::get()
+                ]);
+            } else {
+                $this->addFlash("error", "Please login into your account");
+                return $this->render("login.html.twig");
+            }
         } else {
-            $this->addFlash("error", "Please login into your account");
-            return $this->render("login.html.twig");
-        }
-        }else{
             $this->addFlash("error", "Please login into your account");
             return $this->render("login.html.twig");
         }
@@ -86,73 +85,89 @@ class UserController extends Controller {
      */
     public function manageUsersAction(Request $request) {
         $user = $request->getSession()->get("user");
-        if ($user->getUserType() == "ADMIN") {
-            $users = $this->getAllUsers();
-            $rentals = $this->getAllRentals();
-            return $this->render("manageUsers.html.twig", array(
-                        "user" => $user,
-                        "users" => $users,
-                        "rentals" => $rentals,
-            ));
+        if ($user != null) {
+            if ($user->getUserType() == "ADMIN") {
+                $users = User::getAllUsers($this->getDoctrine()->getManager());
+                $rentals = Rental::getAllRentals($this->getDoctrine()->getManager());
+                return $this->render("manageUsers.html.twig", array(
+                            "user" => $user,
+                            "users" => $users,
+                            "rentals" => $rentals,
+                            "constants" => Constants::get()
+                ));
+            } else {
+                $this->addFlash("error", "You are not allowed to be here!");
+            }
         } else {
-            $this->addFlash("error", "You are not allowed to be here!");
-            return $this->render("accout.html.twig");
+            $this->addFlash("error", "Please login to your account");
         }
+        return $this->render("login.html.twig", ["constants" => Constants::get()
+        ]);
     }
 
     /**
      * @Route("/registerUser", name="registerUser")
      */
-    public function registerMovieAction(Request $request) {
+    public function registerUserAction(Request $request) {
         $user = $request->getSession()->get("user");
-
-        $newUser = new User();
-
-        $newUser->setUserId($request->request->get("registerUserId"));
-        $newUser->setUserName($request->request->get("registerUserName"));
-        $newUser->setUserLastName($request->request->get("registerUserLastame"));
-        $newUser->setUserLogin($request->request->get("registerUserLogin"));
-
-        /* Hashing the password coming from the user input */
-        $plainPassword = $request->request->get("registerUserPassword");
-        $hashedPassword = sha1($plainPassword);
-        $newUser->setUserPassword($hashedPassword);
-
-        $newUser->setUserType($request->request->get("registerUserType"));
-
-        $logger = $this->container->get("logger");
-        $logger->error("AQUIIIIII" . $user->getUserLastName());
-
-        $this->registerToDB($newUser);
-        $this->addFlash("notice", "The user " . $newUser->getUserName() . " has been registered succesfuly");
-
-        $users = $this->getAllUsers();
-        $rentals = $this->getAllRentals();
-        return $this->render("manageUsers.html.twig", array(
-                    "user" => $user,
-                    "users" => $users,
-                    "rentals" => $rentals,
-        ));
+        if ($user != null) {
+            $resultFlag = User::register(
+                            $request->request->get("registerUserId"), $request->request->get("registerUserName"), $request->request->get("registerUserLastame"), $request->request->get("registerUserLogin"), $request->request->get("registerUserPassword"), $request->request->get("registerUserType"), $this->getDoctrine()->getManager());
+            if ($resultFlag == 1) {
+                $this->addFlash("notice", "The user " . $request->request->get("registerUserName") . " has been registered succesfuly");
+            } else {
+                $this->addFlash("error", "An error ocurred, user not registered");
+            }
+            return $this->render("manageUsers.html.twig", [
+                        "user" => $user,
+                        "users" => User::getAllUsers($this->getDoctrine()->getManager()),
+                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
+                        "constants" => Constants::get()
+            ]);
+        } else {
+            $this->addFlash("error", "Please login to your account");
+            return $this->render("accout.html.twig", ["constants" => Constants::get()]);
+        }
     }
 
     /**
      * @Route("/editUser/{userId}", name="editUser", requirements={"userId": "\d+"})
      */
-    public function editMovieAction(Request $request, $userId) {
-        
-    }
-
-    /**
-     * @Route("/removeUser/{userId}", name="removeUser", requirements={"userId": "\d+"})
-     */
-    public function removeMovieAction(Request $request, $userId) {
-        
+    public function editUserAction(Request $request, $userId) {
+        $user = $request->getSession()->get("user");
+        if ($user != null) {
+            $userEdit = User::getTheUser($userId, $this->getDoctrine()->getManager());
+            return $this->render(Constants::VIEW_EDIT_USER, ["constants" => Constants::get(),
+            "user"=>$userEdit]);
+        } else {
+            $this->addFlash(Constants::FLASH_ERROR, Contants::MSG_LOGIN);
+            return $this->render(Constants::VIEW_LOGIN, ["constants" => Constants::get()]);
+        }
     }
 
     /**
      * @Route("/updateUser", name="updateUser")
      */
     public function updateUserAction(Request $request) {
+        $user = $request->getSession()->get("user");
+        if ($user != null) {
+            $resultFlag = User::update($request->request->get("updateUserId"), $request->request->get("updateUserName"), $request->request->get("updateUserLastname"), $request->request->get("updateUserLogin"), $request->request->get("updateUserPassword"), $request->request->get("updateUserType"), $this->getDoctrine()->getManager());
+            if ($resultFlag == 1) {
+                $this->addFlash(Constants::FLASH_NOTICE, Constants::MSG_USER_EDIT_PREF . $request->request->get("editUserName") . Constants::MSG_USER_EDIT_SUFF);
+            } else {
+                $this->addFlash(Constants::FLASH_ERROR, Constants::MSG_BAD_USER_EDIT);
+            }
+            return $this->render(Constants::VIEW_MANAGE_USERS, ["constants" => Constants::get(), "users"=>User::getAllUsers($this->getDoctrine()->getManager())]);
+        } else {
+            $this->addFlash(Constants::FLASH_ERROR, Contants::MSG_LOGIN);
+            return $this->render(Constants::VIEW_LOGIN, ["constants" => Constants::get()]);
+        }
+    }
+
+    /**
+     * @Route("/removeUser/{userId}", name="removeUser", requirements={"userId": "\d+"})
+     */
+    public function removeMovieAction(Request $request, $userId) {
         
     }
 
@@ -259,55 +274,6 @@ class UserController extends Controller {
                         "users" => $users,
                         "rentals" => $rentals,
             ));
-        }
-    }
-
-    /* Register any object to DB */
-
-    public function registerToDB($object) {
-        try {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($object);
-            $em->flush();
-        } catch (Exeption $e) {
-            return false;
-        }
-        return true;
-    }
-
-    /* Fetching all the users */
-
-    public function getAllUsers() {
-        $usersRepository = $this->getDoctrine()->getRepository("AppBundle:User");
-        $users = $usersRepository->findAll();
-        if ($users) {
-            return $users;
-        } else {
-            return null;
-        }
-    }
-
-    /* Fetching all rentals */
-
-    public function getAllRentals() {
-        $rentalsRepository = $this->getDoctrine()->getRepository("AppBundle:Rental");
-        $rentals = $rentalsRepository->findAll();
-        if ($rentals) {
-            return $rentals;
-        } else {
-            return null;
-        }
-    }
-
-    /* Fetching all the movies */
-
-    public function getAllMovies() {
-        $moviesRepository = $this->getDoctrine()->getRepository("AppBundle:Movie");
-        $movies = $moviesRepository->findAll();
-        if ($movies) {
-            return $movies;
-        } else {
-            return null;
         }
     }
 

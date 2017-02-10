@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManager;
 
 
 /**
@@ -186,5 +187,27 @@ class Rental {
     public function getRentalStatus()
     {
         return $this->rental_status;
+    }
+    
+    /* Fetching all rentals */
+    public static function getAllRentals(EntityManager $em) {
+        $rentalsRepository = $em->getRepository("AppBundle:Rental");
+        $rentals = $rentalsRepository->findAll();
+        if ($rentals) {
+            return $rentals;
+        } else {
+            return null;
+        }
+    }
+    
+    /* Register any object to DB */
+    public static function registerToDB($object, EntityManager $em) {
+        try {
+            $em->persist($object);
+            $em->flush();
+        } catch (Exeption $e) {
+            return false;
+        }
+        return true;
     }
 }

@@ -42,16 +42,8 @@ class User {
      */
     private $user_type;
 
-    /* This variable will hold the entity manager */
-    private $em;
-
     //*******************************Beginning of functions************************************
-    
-    public function __construct(EntityManager $em){
-        $this->em = $em;
-    }
-    
-    
+
     /**
      * Set userId
      *
@@ -184,19 +176,79 @@ class User {
         return $this->user_type;
     }
 
-    /*Login method*/
-    public function login($userLogin, $userPassword) {
-        $userRepository = $this->em->getRepository("AppBundle:User");
+    /* Login method */
+
+    public static function login($userLogin, $userPassword, EntityManager $em) {
+        $userRepository = $em->getRepository("AppBundle:User");
         /* Trying to find the User */
         if ($user = $userRepository->findOneBy(array(
             "user_login" => $userLogin
-                ))) {         
+                ))) {
             if ($user->getUserPassword() == sha1($userPassword)) {
                 $return = $user;
                 return $return;
             } else {
                 return null;
             }
+        } else {
+            return null;
+        }
+    }
+
+    /* Get all users method */
+
+    public static function getAllUsers(EntityManager $em) {
+        $usersRepository = $em->getRepository("AppBundle:User");
+        $users = $usersRepository->findAll();
+        if ($users) {
+            return $users;
+        } else {
+            return null;
+        }
+    }
+
+    public static function register($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_type, EntityManager $em) {        
+        $user = new User();
+        $user->setUserId($user_id);
+        $user->setUserName($user_name);
+        $user->setUserLastName($user_lastName);
+        $user->setUserLogin($user_login);
+        $user->setUserPassword(sha1($user_password));
+        $user->setUserType($user_type);
+        User::registerToDB($user, $em);
+        return 1;
+    }
+    
+    public static function update($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_type, EntityManager $em){
+        $user = User::getTheUser($user_id, $em);
+        $user->setUserName($user_name);
+        $user->setUserLastName($user_lastName);
+        $user->setUserLogin($user_login);
+        if($user_password != ""){
+            $user->setUserPassword(sha1($user_password));
+        }
+        $user->setUserType($user_type);
+        $em->flush();
+        return 1;
+    }
+
+    /* Register any object to DB */
+    public static function registerToDB($object, EntityManager $em) {
+        try {
+            $em->persist($object);
+            $em->flush();
+        } catch (Exeption $e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /*Fetching one user by Id*/
+    public static function getTheUser($userId, EntityManager $em) {
+        $userRepository = $em->getRepository("AppBundle:User");
+        $user = $userRepository->find($userId);
+        if ($user) {
+            return $user;
         } else {
             return null;
         }
