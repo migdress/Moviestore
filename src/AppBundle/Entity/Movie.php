@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="MOVIE")
+ * @ORM\Table(name="Movie")
  */
 class Movie {
 	
@@ -18,11 +18,6 @@ class Movie {
 	 */
 	private $movie_id;
 	
-	/**
-	 * @ORM\Column(type="integer")
-	 * 
-	 */
-	private $genre_id;
 	
 	/**
 	 * @ORM\Column(type="string",length=30)
@@ -33,6 +28,16 @@ class Movie {
 	 * @ORM\Column(type="string",length=150)
 	 */
 	private $movie_desc;
+        
+        /**
+	 * @ORM\Column(type="integer")
+	 */
+	private $movie_price;
+        
+        /**
+	 * @ORM\Column(type="string", length=30)
+	 */
+	private $movie_imagePath;
 	
 
     /**
@@ -189,5 +194,53 @@ class Movie {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Set moviePrice
+     *
+     * @param integer $moviePrice
+     *
+     * @return Movie
+     */
+    public function setMoviePrice($moviePrice)
+    {
+        $this->movie_price = $moviePrice;
+
+        return $this;
+    }
+
+    /**
+     * Get moviePrice
+     *
+     * @return integer
+     */
+    public function getMoviePrice()
+    {
+        return $this->movie_price;
+    }
+
+    /**
+     * Set movieImagePath
+     *
+     * @param string $movieImagePath
+     *
+     * @return Movie
+     */
+    public function setMovieImagePath($movieImagePath)
+    {
+        $this->movie_imagePath = $movieImagePath;
+
+        return $this;
+    }
+
+    /**
+     * Get movieImagePath
+     *
+     * @return string
+     */
+    public function getMovieImagePath()
+    {
+        return $this->movie_imagePath;
     }
 }

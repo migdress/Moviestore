@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="USER")
+ * @ORM\Table(name="User")
  */
 class User {
 
@@ -252,6 +252,14 @@ class User {
         } else {
             return null;
         }
+    }
+    
+    /*Remove user from database*/
+    public static function remove($user_id, EntityManager $em){
+        $user = User::getTheUser($user_id, $em);
+        $em->remove($user);
+        $em->flush();
+        return 1;
     }
 
 }

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Utils\Constants;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Movie;
-use AppBundle\Entity\Rental;
+use AppBundle\Entity\Purchase;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class UserController extends Controller {
@@ -34,7 +34,9 @@ class UserController extends Controller {
             ));
         } else {
             $this->addFlash("error", "Invalid data");
-            return $this->render("login.html.twig");
+            return $this->render("login.html.twig", [
+                        "constants" => Constants::get()
+            ]);
         }
     }
 
@@ -88,11 +90,9 @@ class UserController extends Controller {
         if ($user != null) {
             if ($user->getUserType() == "ADMIN") {
                 $users = User::getAllUsers($this->getDoctrine()->getManager());
-                $rentals = Rental::getAllRentals($this->getDoctrine()->getManager());
                 return $this->render("manageUsers.html.twig", array(
                             "user" => $user,
                             "users" => $users,
-                            "rentals" => $rentals,
                             "constants" => Constants::get()
                 ));
             } else {
@@ -121,7 +121,6 @@ class UserController extends Controller {
             return $this->render("manageUsers.html.twig", [
                         "user" => $user,
                         "users" => User::getAllUsers($this->getDoctrine()->getManager()),
-                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ]);
         } else {
@@ -138,7 +137,7 @@ class UserController extends Controller {
         if ($user != null) {
             $userEdit = User::getTheUser($userId, $this->getDoctrine()->getManager());
             return $this->render(Constants::VIEW_EDIT_USER, ["constants" => Constants::get(),
-            "user"=>$userEdit]);
+                        "user" => $userEdit]);
         } else {
             $this->addFlash(Constants::FLASH_ERROR, Contants::MSG_LOGIN);
             return $this->render(Constants::VIEW_LOGIN, ["constants" => Constants::get()]);
@@ -157,7 +156,7 @@ class UserController extends Controller {
             } else {
                 $this->addFlash(Constants::FLASH_ERROR, Constants::MSG_BAD_USER_EDIT);
             }
-            return $this->render(Constants::VIEW_MANAGE_USERS, ["constants" => Constants::get(), "users"=>User::getAllUsers($this->getDoctrine()->getManager())]);
+            return $this->render(Constants::VIEW_MANAGE_USERS, ["constants" => Constants::get(), "users" => User::getAllUsers($this->getDoctrine()->getManager())]);
         } else {
             $this->addFlash(Constants::FLASH_ERROR, Contants::MSG_LOGIN);
             return $this->render(Constants::VIEW_LOGIN, ["constants" => Constants::get()]);
@@ -167,8 +166,26 @@ class UserController extends Controller {
     /**
      * @Route("/removeUser/{userId}", name="removeUser", requirements={"userId": "\d+"})
      */
-    public function removeMovieAction(Request $request, $userId) {
-        
+    public function removeUserAction(Request $request, $userId) {
+        $user = $request->getSession()->get("user");
+        if ($user != null) {
+            $userRemoveName = User::getTheUser($userId, $this->getDoctrine()->getManager())->getUserName();
+            $resultFlag = User::remove($userId, $this->getDoctrine()->getManager());
+            if ($resultFlag == 1) {
+                $this->addFlash(Constants::FLASH_NOTICE, Constants::MSG_USER_REM_PREF . $userRemoveName . Constants::MSG_USER_REM_SUFF);
+            } else {
+                $this->addFlash(Constants::FLASH_ERROR, Constants::MSG_BAD_USER_REM);
+            }
+            return $this->render(Constants::VIEW_MANAGE_USERS, [
+                        "users" => User::getAllUsers($this->getDoctrine()->getManager()),
+                        "constants" => Constants::get()
+            ]);
+        } else {
+            $this->addFlash(Constants::FLASH_ERROR, Constants::MSG_LOGIN);
+            return $this->render(Constants::VIEW_LOGIN, [
+                        "constants" => Constants::get()
+            ]);
+        }
     }
 
     /**

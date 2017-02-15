@@ -7,11 +7,12 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="GENRE")
+ * @ORM\Table(name="Genre")
  */
 class Genre {
 	/**
 	 * @ORM\Column(type="integer")
+         * @ORM\GeneratedValue(strategy="AUTO")
 	 * @ORM\Id
 	 */
 	private $genre_id;

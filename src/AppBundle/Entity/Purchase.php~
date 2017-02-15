@@ -1,0 +1,56 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManager;
+
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Purchase")
+ */
+class Purchase {
+	
+	/**
+	 * @ORM\Column(type="integer")
+         * @ORM\Id
+	 */
+	private $User_user_id;
+	
+	/**
+	 * @ORM\Column(type="integer")
+         * @ORM\Id
+	 */
+	private $Movie_movie_id;
+	
+	/**
+	 * @ORM\Column(type="date")
+	 */
+	private $purchase_date;
+	
+	
+
+    
+    /* Fetching all rentals */
+    public static function getAllPurchases(EntityManager $em) {
+        $rentalsRepository = $em->getRepository("AppBundle:Purchase");
+        $rentals = $rentalsRepository->findAll();
+        if ($rentals) {
+            return $rentals;
+        } else {
+            return null;
+        }
+    }
+    
+    /* Register any object to DB */
+    public static function registerToDB($object, EntityManager $em) {
+        try {
+            $em->persist($object);
+            $em->flush();
+        } catch (Exeption $e) {
+            return false;
+        }
+        return true;
+    }
+}
