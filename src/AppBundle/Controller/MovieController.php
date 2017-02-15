@@ -25,7 +25,6 @@ class MovieController extends Controller {
                             "user" => $user,
                             "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
                             "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                            "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
                             "constants" => Constants::get()
                 ]);
             } else {
@@ -44,7 +43,7 @@ class MovieController extends Controller {
     public function registerMovieAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            $resultFlag = Movie::register($request->request->get("registerMovieGenre"), $request->request->get("registerMovieName"), $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
+            $resultFlag = Movie::register($request->request->get("registerMovieGenre"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
             if ($resultFlag == 1) {
                 $this->addFlash("notice", "The movie " . $request->request->get("registerMovieName") . " has been registered succesfuly");
             } else {
@@ -54,7 +53,6 @@ class MovieController extends Controller {
                         "user" => $user,
                         "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
                         "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ));
         } else {

@@ -1,0 +1,31 @@
+/*div {
+  margin: 20px;
+}*/
+ 
+table.tableList{
+    width: 100%;
+  /*width: 500px;*/
+}
+
+tr.tableList{
+    background-color: #023342;
+}
+
+td.centeredImage{
+    text-align: center;
+}
+ 
+td.leftSide{
+    width: 20%;
+}
+
+td.rightSide{
+    width: 80%;
+}
+
+img.tableList{
+    display: block;
+    margin: 0 auto;
+    width: 70px;
+    height: 90px;
+}

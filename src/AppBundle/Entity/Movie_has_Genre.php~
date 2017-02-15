@@ -1,0 +1,31 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManager;
+use AppBundle\Utils\Constants;
+use AppBundle\Entity\User;
+use AppBundle\Entity\Movie;
+use AppBundle\Entity\Genre;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Movie_has_Genre")
+ */
+class Movie_has_Genre {
+
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     */
+    private $Movie_movie_id;
+    
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     */
+    private $Genre_genre_id;
+
+
+}

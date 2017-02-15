@@ -261,5 +261,6 @@ class User {
         $em->flush();
         return 1;
     }
+    
 
 }

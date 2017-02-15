@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
+use AppBundle\Entity\Movie_has_Genre;
 
 /**
  * @ORM\Entity
@@ -35,9 +36,15 @@ class Movie {
 	private $movie_price;
         
         /**
-	 * @ORM\Column(type="string", length=30)
+	 * @ORM\Column(type="string", length=30, nullable=TRUE)
+         *
 	 */
 	private $movie_imagePath;
+        
+        private $movie_genres = array();
+        
+    
+    
 	
 
     /**
@@ -137,10 +144,11 @@ class Movie {
     }
     
     /*Register Movie*/
-    public static function register($genre_id, $movie_name, $movie_desc, EntityManager $em){
+    public static function register($genre_id, $movie_name, $movie_price, $movie_desc, EntityManager $em){
         $movie = new Movie();
         $movie->setGenreId($genre_id);
         $movie->setMovieName($movie_name);
+        $movie->setMoviePrice($movie_price);
         $movie->setMovieDesc($movie_desc);
         Movie::registerToDB($movie, $em);
         return 1;
@@ -168,6 +176,9 @@ class Movie {
         $moviesRepository = $em->getRepository("AppBundle:Movie");
         $movies = $moviesRepository->findAll();
         if ($movies) {
+            foreach($movies as $movie){
+                $movie->loadGenres($em);
+            }
             return $movies;
         } else {
             return null;
@@ -179,6 +190,7 @@ class Movie {
         $moviesRepository = $em->getRepository("AppBundle:Movie");
         $movie = $moviesRepository->find($movieId);
         if ($movie) {
+            $movie->loadGenres($em);
             return $movie;
         } else {
             return null;
@@ -242,5 +254,10 @@ class Movie {
     public function getMovieImagePath()
     {
         return $this->movie_imagePath;
+    }
+    
+    /*This function loads all the genres belonging to the movie*/
+    public function loadGenres(EntityManager $em){
+        $this->movie_genres = Movie_has_Genre::getTheGenres($this->movie_id, $em);
     }
 }

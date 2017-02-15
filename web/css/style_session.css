@@ -260,7 +260,7 @@ td.status-NOT-AVAILABLE{
 td.movies{
         /*max-width: 10%;*/
 	border-collapse: collapse;
-	border: 2px solid white;
+	border: 2px solid #023342;
 	padding: 5px;
 }
 
@@ -274,8 +274,10 @@ td.moviesDesc{
 .box{
 	padding-top: 5px;
 	padding-left: 10px;	
+        padding-Right: 10px;
 	padding-bottom: 5px;
-	border: 2px solid #ffb600;;
+	/*border: 2px solid #023342;*/
+        background-color: #2d7991/*#0a7091*//*#2d7991*/;
 }
 
 a.actionButton{
@@ -302,27 +304,28 @@ a:active.actionBurron {
 
 .users{
 	border-collapse: collapse;
-	border: 2px solid white; 
+	border: 2px solid #023342; 
 	padding: 3px;
+        background-color: #195466;
 }
 
 td.users{
 	border-collapse: collapse;
-	border: 2px solid white;
+	border: 2px solid #023342;
 	padding: 5px;
 	font-size:60%;
 }
 
 td.users-password{
 	border-collapse: collapse;
-	border: 2px solid white;
+	border: 2px solid #023342;
 	padding: 5px;
 	font-size: 40%;
 }
 
 td.users-wordWrap{
 	border-collapse: collapse;
-	border: 2px solid white;
+	border: 2px solid #023342;
 	padding: 5px;
 	word-wrap: break-word;
 }

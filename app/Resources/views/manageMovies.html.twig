@@ -2,61 +2,42 @@
 
 {% block stylesheets %}
     <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/tableList.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block contentContainerDiv %}
-    <div class="content-container radius-bordered general-text2">
+    <div class=" content-container radius-bordered general-text2">
     {% endblock %}
     {% block content %}
         <div class="box radius-bordered">
             <h3 class="general-text">All registered movies</h3>
-            <table class="movies">
-                <tr class="movies">
-                    <th class="movies">Id</th>
-                    <th class="movies">Name</th>
-                    <th class="movies">Genre</th>
-                    <th class="movies">Description</th>
-                    <th class="movies">Status</th>
-                    <th class="movies">Actions</th>
-                </tr>
-                {% if movies %}
-                    {% for movie in movies %}
-                        <tr class="movies">
-                            <td class="movies">{{ movie.movieId }}</td>
-                            <td class="movies">{{ movie.movieName}}</td>
-                            {% for genre in genres %}
-                                {% if genre.genreId == movie.genreId %}
-                                    <td class="movies">{{  genre.genreName}}</td>
-                                {% endif %}
-                            {% endfor %}
-                            <td class="moviesDesc">{{ movie.MovieDesc}}</td>
-                            {% if rentals  %}
-                                {% for rental in rentals %}
-                                    {% if rental.movieId == movie.movieId %}
-                                        {% if rental.rentalStatus == "VALID" %}
-                                            <td class="movies">RENTED</td>
-                                        {% else %}
-                                            <td class="movies">AVAILABLE</td>
-                                        {% endif %}
-                                    {% else %}
-                                        <td class="movies">AVAILABLE</td>
-                                    {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <td class="movies">AVAILABLE</td>
-                            {%endif %}
-                            <td class="movies">
-                                <a
-                                    class="actionButton general-text radius-bordered"
-                                    href="{{ path("editMovie", {'movieId':movie.movieId}) }}">Edit</a>
-                                <a
-                                    class="actionButton general-text radius-bordered"
-                                    href="{{ path("removeMovie", {'movieId':movie.movieId}) }}">Remove</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-            </table>
+            <div>
+                <table class = "tableList">
+                    {% if movies %}
+                        {% for movie in movies%}
+                            <tr class="tableList">
+                                <td class="leftSide">
+                                    <img class ="tableList" src="{{ asset('images/noImage.png') }}" alt="movieImage" />
+                                </td>
+                                <td class="rightSide"> 
+                                    <h3 class="general-text2">{{movie.movieName}}</h3>
+                                    <p>{{movie.movieDesc}}<br>
+                                        Price: $USD {{movie.moviePrice}}<br></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" ><a
+                                        class="actionButton general-text radius-bordered"
+                                        href="{{ path("editMovie", {'movieId':movie.movieId}) }}">Edit</a>
+
+                                    <a
+                                        class="actionButton general-text radius-bordered"
+                                        href="{{ path("removeMovie", {'movieId':movie.movieId}) }}">Remove</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
         </div>
         <br>
         <div class="box radius-bordered">
@@ -77,6 +58,10 @@
                                         {{ genre.genreName }}</option>
                                     {% endfor %}
                             </select></td>
+                    </tr>
+                    <tr>
+                        <td>Movie price: $USD</td>
+                        <td><input type="number" name="registerMoviePrice"></td>
                     </tr>
                     <tr>
                         <td colspan="2">Movie Description (up to 150 characters):</td>
@@ -102,16 +87,16 @@
                     <tr>
                         <td>Movie to edit:</td>
                         <td><select name="editMovieId">
-                                {% for movie in movies %}
-                                    <option value="{{ movie.movieId }}">{{ movie.movieName}}</option>
-                                {% endfor %}
-                            </select></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><input type="submit" value="Edit"
-                                               class="formTable general-text"></td>
-                    </tr>
-                </table>
-            </form>
-        </div>-->
+        {% for movie in movies %}
+            <option value="{{ movie.movieId }}">{{ movie.movieName}}</option>
+        {% endfor %}
+    </select></td>
+</tr>
+<tr>
+<td colspan="2"><input type="submit" value="Edit"
+                       class="formTable general-text"></td>
+</tr>
+</table>
+</form>
+</div>-->
     {% endblock %}

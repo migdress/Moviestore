@@ -92,4 +92,15 @@ class Genre {
         }
         return true;
     }
+    
+    /*Fetching one genre by Id*/
+    public static function getTheGenre($genreId, EntityManager $em) {
+        $genresRepository = $em->getRepository("AppBundle:Genre");
+        $genre = $genresRepository->find($genreId);
+        if ($genre) {
+            return $genre;
+        } else {
+            return null;
+        }
+    }
 }
