@@ -7,6 +7,16 @@ body {
 	background-color: #2d7991;
 }
 
+hr {
+    color: #ffb600;
+    border: 1px solid #023342;   
+}
+
+h3{
+    background-color: #023342;
+    text-align: center;
+}
+
 .general-text {
 	color: #ffb600;
 	text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black;
@@ -302,14 +312,14 @@ a:active.actionBurron {
 
 /*--------------------------------------MANAGE USER CLASSES----------------------------*/
 
-.users{
+.users {
 	border-collapse: collapse;
 	border: 2px solid #023342; 
 	padding: 3px;
         background-color: #195466;
 }
 
-td.users{
+td.users {
 	border-collapse: collapse;
 	border: 2px solid #023342;
 	padding: 5px;
@@ -328,4 +338,20 @@ td.users-wordWrap{
 	border: 2px solid #023342;
 	padding: 5px;
 	word-wrap: break-word;
+}
+
+/*--------------------------------------MANAGE GENRE CLASSES----------------------------*/
+
+.genres {
+	border-collapse: collapse;
+	border: 2px solid #023342; 
+	padding: 3px;
+        background-color: #195466;
+}
+
+td.genres {
+	border-collapse: collapse;
+	border: 2px solid #023342;
+	padding: 5px;
+	font-size:90%;
 }

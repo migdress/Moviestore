@@ -1,82 +1,87 @@
 {% extends "admin.html.twig" %}
 
 {% block stylesheets %}
-<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block contentContainerDiv %}
-<div class="content-container radius-bordered general-text2">
-	{% endblock %}
-	{% block content %}
-	<div class="box radius-bordered">
-		<h3 class="general-text">All registered users</h3>
-		<table class="users">
-			<tr class="users">
-				<th class="users">Id</th>
-				<th class="users">Name</th>
-				<th class="users">Lastname</th>
-				<th class="users">Login</th>
-				<th class="users">Password</th>
-				<th class="users">Type</th>
-				<th class="users">Actions</th>
-			</tr>
-			{% for user in users %}
-			<tr class="users">
-				<td class="users">{{ user.userId }}</td>
-				<td class="users">{{ user.userName}}</td>
-				<td class="users">{{ user.userLastName}}</td>
-				<td class="users">{{ user.userLogin}}</td>
-				<td class="users-password">{{ user.userPassword}}</p></td>
-				<td class="users">{{ user.userType}}</td>
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <a
+                class="actionButton general-text radius-bordered"
+                href="#registerNewUser">Register a new Genre</a>
+        </div><br>
+        <div class="box radius-bordered">
+            <h3 class="general-text">All registered genres</h3>
+            <table class="users">
+                <tr class="users">
+                    <th class="users">Id</th>
+                    <th class="users">Name</th>
+                    <th class="users">Lastname</th>
+                    <th class="users">Login</th>
+                    <th class="users">Password</th>
+                    <th class="users">Type</th>
+                    <th class="users">Actions</th>
+                </tr>
+                {% for user in users %}
+                    <tr class="users">
+                        <td class="users">{{ user.userId }}</td>
+                        <td class="users">{{ user.userName}}</td>
+                        <td class="users">{{ user.userLastName}}</td>
+                        <td class="users">{{ user.userLogin}}</td>
+                        <td class="users-password">{{ user.userPassword}}</p></td>
+                        <td class="users">{{ user.userType}}</td>
 
-				<td class="movies"><a
-					class="actionButton general-text radius-bordered"
-					href="{{ path("editUser", {'userId':user.userId}) }}">Edit</a> <a
-					class="actionButton general-text radius-bordered"
-					href="{{ path("removeUser", {'userId':user.userId}) }}">Remove</a>
-				</td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-	<br>
-	<div class="box radius-bordered">
-		<h3 class="general-text">Register a new user</h3>
-		<p>Please complete the form below to register a new user</p>
-		<form action="/registerUser" method="post">
-			<table>
-				<tr>
-					<td>User id:</td>
-					<td><input type="text" name="registerUserId"></td>
-				</tr>
-				<tr>
-					<td>User name:</td>
-					<td><input type="text" name="registerUserName"></td>
-				</tr>
-				<tr>
-					<td>User lastname:</td>
-					<td><input type="text" name="registerUserLastame"></td>
-				</tr>
-				<tr>
-					<td>User login:</td>
-					<td><input type="text" name="registerUserLogin"></td>
-				</tr>
-				<tr>
-					<td>User password:</td>
-					<td><input type="password" name="registerUserPassword"></td>
-				</tr>
-				<tr>
-					<td>User type:</td>
-					<td><select name="registerUserType">
-							<option value="CLIENT">Client</option>
-							<option value="ADMIN">Admin</option>
-					</select></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="submit"
-						class="formTable general-text" value="Register"></td>
-				</tr>
-			</table>
-		</form>
-	</div>
-	{% endblock %}
+                        <td class="movies"><a
+                                class="actionButton general-text radius-bordered"
+                                href="{{ path("editUser", {'userId':user.userId}) }}">Edit</a> <a
+                                class="actionButton general-text radius-bordered"
+                                href="{{ path("removeUser", {'userId':user.userId}) }}">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <br>
+        <div id="registerNewUser" class="box radius-bordered">
+            <h3 class="general-text">Register a new user</h3>
+            <p>Please complete the form below to register a new user</p>
+            <form action="/registerUser" method="post">
+                <table>
+                    <tr>
+                        <td>User id:</td>
+                        <td><input type="text" name="registerUserId"></td>
+                    </tr>
+                    <tr>
+                        <td>User name:</td>
+                        <td><input type="text" name="registerUserName"></td>
+                    </tr>
+                    <tr>
+                        <td>User lastname:</td>
+                        <td><input type="text" name="registerUserLastame"></td>
+                    </tr>
+                    <tr>
+                        <td>User login:</td>
+                        <td><input type="text" name="registerUserLogin"></td>
+                    </tr>
+                    <tr>
+                        <td>User password:</td>
+                        <td><input type="password" name="registerUserPassword"></td>
+                    </tr>
+                    <tr>
+                        <td>User type:</td>
+                        <td><select name="registerUserType">
+                                <option value="CLIENT">Client</option>
+                                <option value="ADMIN">Admin</option>
+                            </select></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit"
+                                               class="formTable general-text" value="Register"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endblock %}

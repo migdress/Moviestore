@@ -10,6 +10,11 @@
     {% endblock %}
     {% block content %}
         <div class="box radius-bordered">
+            <a
+                class="actionButton general-text radius-bordered"
+                href="#registerNewMovie">Register a new movie</a>
+        </div><br>
+        <div class="box radius-bordered">
             <h3 class="general-text">All registered movies</h3>
             <div>
                 <table class = "tableList">
@@ -20,83 +25,80 @@
                                     <img class ="tableList" src="{{ asset('images/noImage.png') }}" alt="movieImage" />
                                 </td>
                                 <td class="rightSide"> 
-                                    <h3 class="general-text2">{{movie.movieName}}</h3>
-                                    <p>{{movie.movieDesc}}<br>
+                                    <h2 class="general-text2">{{movie.movieName}}</h3>
+                                        <p>{% for genre in movie.movieGenres %}
+                                            {{genre.genreName}}
+                                            {% if not loop.last %}
+                                                ,
+                                            {% endif %}
+                                        {% endfor %}<br>
+                                        {{movie.movieDesc}}<br>
                                         Price: $USD {{movie.moviePrice}}<br></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" ><a
-                                        class="actionButton general-text radius-bordered"
-                                        href="{{ path("editMovie", {'movieId':movie.movieId}) }}">Edit</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" ><a
+                                    class="actionButton general-text radius-bordered"
+                                    href="{{ path("editMovie", {'movieId':movie.movieId}) }}">Edit</a>
 
-                                    <a
-                                        class="actionButton general-text radius-bordered"
-                                        href="{{ path("removeMovie", {'movieId':movie.movieId}) }}">Remove</a></td>
-                            </tr>
+                                <a
+                                    class="actionButton general-text radius-bordered"
+                                    href="{{ path("removeMovie", {'movieId':movie.movieId}) }}">Remove</a></td>
+                        </tr>
                         {% endfor %}
-                    {% endif %}
-                </table>
-            </div>
-        </div>
-        <br>
-        <div class="box radius-bordered">
-            <h3 class="general-text">Register a new movie</h3>
-            <p>Please complete the form below to register a new movie</p>
-            <form action="/registerMovie" method="post">
-                <table>
-                    <tr>
-                        <td>Movie name:</td>
-                        <td><input type="text" name="registerMovieName"></td>
-                    </tr>
-                    <tr>
-                        <td>Movie genre:</td>
+                            {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                    <br>
+                    <div id="registerNewMovie" class="box radius-bordered">
+                        <h3 class="general-text">Register a new movie</h3>
+                        <p>Please complete the form below to register a new movie</p>
+                        <form action="/registerMovie" method="post">
+                            <table>
+                                <tr>
+                                    <td>Movie name:</td>
+                                    <td><input type="text" name="registerMovieName"></td>
+                                </tr>
+                                <tr>
+                                    <td>Movie genres:</td>
 
-                        <td><select name="registerMovieGenre">
-                                {% for genre in genres %}
-                                    <option value="{{ genre.genreId }}">
-                                        {{ genre.genreName }}</option>
-                                    {% endfor %}
-                            </select></td>
-                    </tr>
-                    <tr>
-                        <td>Movie price: $USD</td>
-                        <td><input type="number" name="registerMoviePrice"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Movie Description (up to 150 characters):</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><textarea rows="5" cols="40"
-                                                  name="registerMovieDesc"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><input type="submit"
-                                               class="formTable general-text" value="Register"></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <br>
+                                    <td>
+                                        <table>
+                                            {% for genre in genres %}
+                                                {% if loop.first %}
+                                                    <tr>
+                                                    {% endif %}
+                                                    <td>
+                                                        <input type="checkbox" name="registerMovieGenres[]" value="{{genre.genreId}}">{{genre.genreName}}
+                                                    </td>
+                                                    {% if not loop.first and (loop.index % 4) == 0 and not loop.last %}
+                                                    </tr><tr>
+                                                    {% elseif loop.last %}
+                                                    </tr>
+                                                {% endif%}
+                                            {% endfor %}
+                                        </table>
 
-        <!--<div class="box radius-bordered">
-            <h3 class="general-text">Edit a movie</h3>
-            <p>Please select the movie to edit from the drop-down list</p>
-            <form action="/editMovie" method="post">
-                <table>
-                    <tr>
-                        <td>Movie to edit:</td>
-                        <td><select name="editMovieId">
-        {% for movie in movies %}
-            <option value="{{ movie.movieId }}">{{ movie.movieName}}</option>
-        {% endfor %}
-    </select></td>
-</tr>
-<tr>
-<td colspan="2"><input type="submit" value="Edit"
-                       class="formTable general-text"></td>
-</tr>
-</table>
-</form>
-</div>-->
-    {% endblock %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Movie price: $USD</td>
+                                    <td><input type="number" name="registerMoviePrice"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Movie Description (up to 150 characters):</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><textarea rows="5" cols="40"
+                                                              name="registerMovieDesc"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><input type="submit"
+                                                           class="formTable general-text" value="Register"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                    <br>
+                    {% endblock %}

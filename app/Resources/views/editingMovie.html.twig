@@ -1,57 +1,76 @@
 {% extends "admin.html.twig" %}
 
 {% block stylesheets %}
-<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block contentContainerDiv %}
-<div class="content-container radius-bordered general-text2">
-	{% endblock %}
-	{% block content %}
-	<div class="box radius-bordered">
-		<h3 class="general-text">Editing movie</h3>
-		<form action="/updateMovie" method="post">
-			<table>
-				<tr>
-					<td>Movie Id:</td>
-					<td><input type="text" name="updateMovieId"
-						value="{{ movie.movieId }}"></td>
-				</tr>
-				<tr>
-					<td>Movie name:</td>
-					<td><input type="text" name="updateMovieName"
-						value="{{ movie.movieName }}"></td>
-				</tr>
-				<tr>
-					<td>Movie genre:</td>
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <h3 class="general-text">Editing movie</h3>
+            <form action="/updateMovie" method="post">
+                <table>
+                    <tr>
+                        <td>Movie Id:</td>
+                        <td><input type="text" name="updateMovieId"
+                                   value="{{ movie.movieId }}" readonly="readonly"></td>
+                    </tr>
+                    <tr>
+                        <td>Movie name:</td>
+                        <td><input type="text" name="updateMovieName"
+                                   value="{{ movie.movieName }}"></td>
+                    </tr>
+                    <tr>
+                        <td>Movie genre:</td>                                      
+                        <td>
+                            <table>
+                                {% for genre in genres %}
+                                    {% if loop.first %}
+                                        <tr>
+                                        {% endif %}
+                                        <td>
+                                            {% set checked = FALSE %}
+                                            {%for movieGenre in movie.movieGenres %}
+                                                {% if genre.genreId == movieGenre.genreId %}
+                                                    <input type="checkbox" name="updateMovieGenres[]" value="{{genre.genreId}}" checked>{{genre.genreName}}
+                                                    {% set checked = TRUE %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if checked == FALSE %}
+                                                <input type="checkbox" name="updateMovieGenres[]" value="{{genre.genreId}}">{{genre.genreName}}
+                                            {% endif %}
 
-					<td><select name="updateMovieGenre">
-							{% for genre in genres %}
-							{% if movie.genreId == genre.genreId %}
-							<option selected="selected" value="{{ genre.genreId }}">
-								{{ genre.genreName }}</option>
-							{% else %}
-							<option value="{{ genre.genreId }}">
-								{{ genre.genreName }}</option>
-							{% endif %}
-							{% endfor %}
-					</select></td>
-				</tr>
-				<tr>
-					<td colspan="2">Movie Description (up to 150 characters):</td>
-				</tr>
-				<tr>
-					<td colspan="2"><textarea rows="5" cols="40"
-							name="updateMovieDesc">{{ movie.movieDesc }}</textarea></td>
-				</tr>
-				<tr>
-					<td><input type="submit"
-						class="formTable general-text radius-bordered" value="Update"></td>
+                                        </td>
+                                        {% if not loop.first and (loop.index % 4) == 0 and not loop.last %}
+                                        </tr><tr>
+                                        {% elseif loop.last %}
+                                        </tr>
+                                    {% endif%}
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Movie price: $USD</td>
+                        <td><input type="number" name="updateMoviePrice" value={{movie.moviePrice}}></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Movie Description (up to 150 characters):</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><textarea rows="5" cols="40"
+                                                  name="updateMovieDesc">{{ movie.movieDesc }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit"
+                                   class="formTable general-text radius-bordered" value="Update"></td>
 
-					<td><a href="{{ path("manageMovies") }}"
-						class="nav-bar-item radius-bordered general-text">Cancel</td>
-				</tr>
-			</table>
-		</form>
-	</div>
-	{% endblock %}
+                        <td><a href="{{ path("manageMovies") }}"
+                               class="nav-bar-item radius-bordered general-text">Cancel</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endblock %}

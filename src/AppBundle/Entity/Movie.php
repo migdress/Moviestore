@@ -71,29 +71,6 @@ class Movie {
         return $this->movie_id;
     }
 
-    /**
-     * Set genreId
-     *
-     * @param integer $genreId
-     *
-     * @return Movie
-     */
-    public function setGenreId($genreId)
-    {
-        $this->genre_id = $genreId;
-
-        return $this;
-    }
-
-    /**
-     * Get genreId
-     *
-     * @return integer
-     */
-    public function getGenreId()
-    {
-        return $this->genre_id;
-    }
 
     /**
      * Set movieName
@@ -144,27 +121,29 @@ class Movie {
     }
     
     /*Register Movie*/
-    public static function register($genre_id, $movie_name, $movie_price, $movie_desc, EntityManager $em){
+    public static function register(Array $movie_genres, $movie_name, $movie_price, $movie_desc, EntityManager $em){
         $movie = new Movie();
-        $movie->setGenreId($genre_id);
         $movie->setMovieName($movie_name);
         $movie->setMoviePrice($movie_price);
         $movie->setMovieDesc($movie_desc);
         Movie::registerToDB($movie, $em);
+        Movie_has_Genre::registerRecords($movie->getMovieId(), $movie_genres, $em);
         return 1;
     }
     
-    public static function update($movie_id, $genre_id, $movie_name, $movie_desc, EntityManager $em){
+    public static function update($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $movie_desc, EntityManager $em){
         $movie = Movie::getTheMovie($movie_id, $em);
-        $movie->setGenreId($genre_id);
         $movie->setMovieName($movie_name);
+        $movie->setMoviePrice($movie_price);
         $movie->setMovieDesc($movie_desc);
         $em->flush();
+        Movie_has_Genre::updateRecords($movie_id, $movie_genres, $em);
         return 1;
     }
     
     public static function remove($movie_id, EntityManager $em){
         $movie = Movie::getTheMovie($movie_id, $em);
+        Movie_has_Genre::removeRecords($movie_id, $em);
         $em->remove($movie);
         $em->flush();
         return 1;
@@ -255,6 +234,16 @@ class Movie {
     {
         return $this->movie_imagePath;
     }
+    
+    /**
+     * Get movieGenres
+     *
+     * @return array
+     */
+    public function getMovieGenres()
+    {
+        return $this->movie_genres;
+    } 
     
     /*This function loads all the genres belonging to the movie*/
     public function loadGenres(EntityManager $em){

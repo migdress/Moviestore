@@ -1,0 +1,54 @@
+{% extends "admin.html.twig" %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block contentContainerDiv %}
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <a
+                class="actionButton general-text radius-bordered"
+                href="#registerNewGenre">Register a new Genre</a>
+        </div><br>
+        <div class="box radius-bordered">
+            <h3 class="general-text">All registered genres</h3>
+            <table class="genres">
+                <tr class="genres">
+                    <th class="genres">Id</th>
+                    <th class="genresgenres">Name</th>
+                </tr>
+                {% for genre in genres %}
+                    <tr class="genres">
+                        <td class="genres">{{ genre.genreId }}</td>
+                        <td class="genres">{{ genre.genreName}}</td>
+                        <td class="genres"><a
+                                class="actionButton general-text radius-bordered"
+                                href="{{ path("editGenre", {'genreId':genre.genreId}) }}">Edit</a> <a
+                                class="actionButton general-text radius-bordered"
+                                href="{{ path("removeGenre", {'genreId':genre.genreId}) }}">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <br>
+        <div id="registerNewGenre" class="box radius-bordered">
+            <h3 class="general-text">Register a new genre</h3>
+            <p>Please complete the form below to register a new genre</p>
+            <form action="/registerGenre" method="post">
+                <table>
+                    <tr>
+                        <td>Genre name:</td>
+                        <td><input type="text" name="registerGenreName"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit"
+                                               class="formTable general-text" value="Register"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endblock %}

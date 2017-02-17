@@ -125,7 +125,7 @@ class UserController extends Controller {
             ]);
         } else {
             $this->addFlash("error", "Please login to your account");
-            return $this->render("accout.html.twig", ["constants" => Constants::get()]);
+            return $this->render(Constants::VIEW_LOGIN, ["constants" => Constants::get()]);
         }
     }
 

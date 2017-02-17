@@ -1,0 +1,32 @@
+{% extends "admin.html.twig" %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block contentContainerDiv %}
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block content %}
+        <div class="box radius-bordered">
+            <h3 class="general-text">Editing genre</h3>
+            <form action="/updateGenre" method="post">
+                <table>
+                    <tr>
+                        <td>Genre id:</td>
+                        <td><input type="text" name="updateGenreId" value="{{ genre.genreId}}" readonly="readonly"></td>
+                    </tr>
+                    <tr>
+                        <td>Genre Name:</td>
+                        <td><input type="text" name="updateGenreName" value="{{ genre.genreName}}"></td>
+                    </tr>                    
+                    <tr>
+                        <td colspan="2"><input type="submit"
+                                               class="formTable general-text" value="Update"></td>
+                        <td><a href="{{ path("manageGenres") }}"
+						class="nav-bar-item radius-bordered general-text">Cancel</td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    {% endblock %}

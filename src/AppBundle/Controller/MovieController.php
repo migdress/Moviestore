@@ -24,7 +24,7 @@ class MovieController extends Controller {
                 return $this->render("manageMovies.html.twig", [
                             "user" => $user,
                             "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                            "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
+                            "genres" => Genre::getAllGenresASC($this->getDoctrine()->getManager()),
                             "constants" => Constants::get()
                 ]);
             } else {
@@ -43,7 +43,7 @@ class MovieController extends Controller {
     public function registerMovieAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            $resultFlag = Movie::register($request->request->get("registerMovieGenre"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
+            $resultFlag = Movie::register($request->request->get("registerMovieGenres"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
             if ($resultFlag == 1) {
                 $this->addFlash("notice", "The movie " . $request->request->get("registerMovieName") . " has been registered succesfuly");
             } else {
@@ -68,12 +68,10 @@ class MovieController extends Controller {
         $user = $request->getSession()->get("user");
         if ($user != null) {
             $movie = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager());
-            return $this->render("editingMovie.html.twig", [
+            return $this->render(Constants::VIEW_EDIT_MOVIE, [
                         "user" => $user,
                         "movie" => $movie,
-                        "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
+                        "genres" => Genre::getAllGenresASC($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ]);
         } else {
@@ -88,7 +86,7 @@ class MovieController extends Controller {
     public function updateMovieAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            $resultFlag = Movie::update($request->request->get("updateMovieId"), $request->request->get("updateMovieGenre"), $request->request->get("updateMovieName"), $request->request->get("updateMovieDesc"), $this->getDoctrine()->getManager());
+            $resultFlag = Movie::update($request->request->get("updateMovieId"), $request->request->get("updateMovieGenres"), $request->request->get("updateMovieName"), $request->request->get("updateMoviePrice"), $request->request->get("updateMovieDesc"), $this->getDoctrine()->getManager());
             if ($resultFlag == 1) {
                 $this->addFlash("notice", "The movie " . $request->request->get("updateMovieName") . " has been updated");
             } else {
@@ -98,7 +96,6 @@ class MovieController extends Controller {
                         "user" => $user,
                         "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
                         "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ]);
         } else {
@@ -116,15 +113,14 @@ class MovieController extends Controller {
             $movieName = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager())->getMovieName();
             $resultFlag = Movie::remove($movieId, $this->getDoctrine()->getManager());
             if ($resultFlag == 1) {
-                $this->addFlash("notice", "The movie " . $movieName . " has been removed");
+                $this->addFlash(Constants::FLASH_NOTICE, "The movie " . $movieName . " has been removed");
             } else {
-                $this->addFlash("error", "An error ocurred, the movie was not removed");
+                $this->addFlash(Constants::FLASH_ERROR, "An error ocurred, the movie was not removed");
             }
             return $this->render("manageMovies.html.twig", array(
                         "user" => $user,
                         "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
                         "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                        "rentals" => Rental::getAllRentals($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ));
         } else {

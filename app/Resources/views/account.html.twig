@@ -1,21 +1,22 @@
 {% extends "base.html.twig" %}
 
 {% block stylesheets %}
-<link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
+    <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block contentContainerDiv %}
-<div class="content-container radius-bordered general-text2">
-{% endblock %}
-{% block userContent %}
-<div class="user-container radius-bordered general-text2">
-	<ul class="nav-bar">
-		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("search") }}">Search</a></li>
-		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("userRentals") }}">My rentals</a></li>
-		<li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="#">MyInfo</a></li>
-	</ul>
-</div>
-{% endblock %}
-{% block content %}
-<p>Welcome to Movieland {{ user.userName }}! in the left sidebar you'll fin your info</p>
-{% endblock %}
+    <div class="content-container radius-bordered general-text2">
+    {% endblock %}
+    {% block userContent %}
+        <div class="user-container radius-bordered general-text2">
+            <h3 class="general-text2">User Control Panel</h3>
+            <ul class="nav-bar">
+                <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("search") }}">Search</a></li>
+                <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("userRentals") }}">My rentals</a></li>
+                <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="#">MyInfo</a></li>
+            </ul>
+        </div>
+    {% endblock %}
+    {% block content %}
+        <p>Welcome to Movieland {{ user.userName }}! in the left sidebar you'll fin your info</p>
+    {% endblock %}
