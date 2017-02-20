@@ -11,6 +11,7 @@ use AppBundle\Entity\Genre;
 class GenreController extends Controller {
 
     /**
+     * 
      * @Route("/manageGenres", name="manageGenres")
      */
     public function manageGenresAction(Request $request) {

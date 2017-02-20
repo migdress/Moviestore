@@ -24,7 +24,7 @@ class MovieController extends Controller {
                 return $this->render("manageMovies.html.twig", [
                             "user" => $user,
                             "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                            "genres" => Genre::getAllGenresASC($this->getDoctrine()->getManager()),
+                            "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
                             "constants" => Constants::get()
                 ]);
             } else {
@@ -43,10 +43,19 @@ class MovieController extends Controller {
     public function registerMovieAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            $resultFlag = Movie::register($request->request->get("registerMovieGenres"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
-            if ($resultFlag == 1) {
+            $imageFile = $request->files->get("registerMovieImage");
+            $imageName = null;
+            if($imageFile != null){
+                $imageName =$request->request->get("registerMovieName").".".$imageFile->guessExtension();
+            }
+            $resultFlag = Movie::register($request->request->get("registerMovieGenres"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $imageName, $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
+            if ($resultFlag > 0 ){
+                if($imageFile != null){
+                $imageFile->move(Constants::DIR_MOVIE_IMAGES, $imageName);
+                }
                 $this->addFlash("notice", "The movie " . $request->request->get("registerMovieName") . " has been registered succesfuly");
-            } else {
+            }
+            else {
                 $this->addFlash("error", "An error ocurred, movie not registered");
             }
             return $this->render("manageMovies.html.twig", array(
@@ -71,7 +80,7 @@ class MovieController extends Controller {
             return $this->render(Constants::VIEW_EDIT_MOVIE, [
                         "user" => $user,
                         "movie" => $movie,
-                        "genres" => Genre::getAllGenresASC($this->getDoctrine()->getManager()),
+                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
                         "constants" => Constants::get()
             ]);
         } else {
@@ -86,8 +95,20 @@ class MovieController extends Controller {
     public function updateMovieAction(Request $request) {
         $user = $request->getSession()->get("user");
         if ($user != null) {
-            $resultFlag = Movie::update($request->request->get("updateMovieId"), $request->request->get("updateMovieGenres"), $request->request->get("updateMovieName"), $request->request->get("updateMoviePrice"), $request->request->get("updateMovieDesc"), $this->getDoctrine()->getManager());
-            if ($resultFlag == 1) {
+            $imageFile = $request->files->get("updateMovieImage");
+            $imageName = null;
+            if($imageFile != null){
+                $imageName =$request->request->get("updateMovieName").".".$imageFile->guessExtension();
+            }
+            $resultFlag = Movie::update($request->request->get("updateMovieId"), $request->request->get("updateMovieGenres"), $request->request->get("updateMovieName"), $request->request->get("updateMoviePrice"), $imageName, $request->request->get("updateMovieDesc"), $this->getDoctrine()->getManager());
+            if ($resultFlag > 0) {
+                if ($imageFile != null) {
+                    $fs = $this->get("filesystem");
+                    if ($fs->exists(Constants::DIR_MOVIE_IMAGES."/".$imageName)) {
+                        $fs->remove(Constants::DIR_MOVIE_IMAGES."/".$imageName);
+                    }
+                    $imageFile->move(Constants::DIR_MOVIE_IMAGES, $imageName);
+                }
                 $this->addFlash("notice", "The movie " . $request->request->get("updateMovieName") . " has been updated");
             } else {
                 $this->addFlash("error", "An error ocurred, the movie was not updated");
@@ -111,8 +132,13 @@ class MovieController extends Controller {
         $user = $request->getSession()->get("user");
         if ($user != null) {
             $movieName = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager())->getMovieName();
+            $imageName = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager())->getMovieImagePath();
             $resultFlag = Movie::remove($movieId, $this->getDoctrine()->getManager());
             if ($resultFlag == 1) {
+                if ($imageName != null) {
+                    $fs = $this->get("filesystem");
+                    $fs->remove(Constants::DIR_MOVIE_IMAGES . "/" . $imageName);
+                }
                 $this->addFlash(Constants::FLASH_NOTICE, "The movie " . $movieName . " has been removed");
             } else {
                 $this->addFlash(Constants::FLASH_ERROR, "An error ocurred, the movie was not removed");

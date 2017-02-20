@@ -70,19 +70,6 @@ class Genre {
     /* Fetching all the genres */
 
     public static function getAllGenres(EntityManager $em) {
-        $genresRepository = $em->getRepository("AppBundle:Genre");
-        $genres = $genresRepository->findAll();
-        if ($genres) {
-            return $genres;
-        } else {
-            return null;
-        }
-    }
-
-    /* Fetching all the genres ordered by name ascending*/
-    public static function getAllGenresASC(EntityManager $em) {
-        $genresRepository = $em->getRepository("AppBundle:Genre");
-        /*$genres = $genresRepository->findBy(["genre_name" => "ASC"]);*/
         $query = $em->createQuery('SELECT g FROM AppBundle:Genre g ORDER BY g.genre_name ASC');
         $genres = $query->getResult();
         if ($genres) {

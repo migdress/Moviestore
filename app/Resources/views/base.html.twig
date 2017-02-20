@@ -1,34 +1,56 @@
 <!DOCTYPE html>
+{#This is the main base template from which all other ihheritate#}
 <html>
+    {#This is the head of the page#}
     <head>
         <meta charset="UTF-8" />
+        {#Below is the block for the title of the page which can be replaced in child pages#}
         <title>{% block title %}Movieland{% endblock %}</title>
+        {#Below is the block for the Stylesheets which will be replaced sometimes for specific CSS needs#}
         {% block stylesheets %}
             <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         {% endblock %}
+        {#Below is the link to the icon of the application#}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
+    {#This is the body of the page#}
     <body>
+        {#Below is the block for the header of the page#}
         {% block header %}
+            {#The header div is embedded in an <a> element to be able to be clicked redirecting to the homepage
+            {#The css class of the element is "invisible" which removes the decoration for <a> elements #}
             <a class="invisible" href="/">
+                {#Below is the div for the header, it has also a class margin and radius bordered to make the div looks good#}
                 <div class="header margin radius-bordered">
+                    {#This is the main text in the header#}
                     <h1>Movieland &trade;</h1>
+                    {#This is the subtext in the header#}
                     <p class="sub-header general-text3">"Your Online Movie Service"</p>
                 </div>
             </a>
         {% endblock %}
 
+        {#Below is the block for the navigation horizontal bar which contains some elements according to#}
+        {#..The type of user requesting the page#}
         {% block navBar %}
+            {#Below is the div for the navigation horizontal bar#}
             <div class="nav-bar-container margin radius-bordered">
+                {#The nav bar is a simple <ul> element which is horizontal#}
                 <ul class="nav-bar">
+                    {#Below there are the <li> items for each link the nav bar#}
+                    {#Some of the <li> are restricted to ADMIN users and that's why there are some if tags#}
                     <li class="nav-bar-item"><a href="/"
                                                 class="nav-bar-item general-text radius-bordered">Home</a></li>
+                        {#the Log in and register <li> elements are just rendered when there is not an active session#}
                         {% if not app.Session.get("user")  %}
                         <li class="nav-bar-item"><a href="/login"
                                                     class="nav-bar-item general-text radius-bordered">Log in</a></li>
                         <li class="nav-bar-item"><a href="/register"
                                                     class="nav-bar-item general-text radius-bordered">Join us</a></li>
+                        {#When there are active sessions the <li> elements Admin Panel or Account Panel are rendered#}
                         {% else %}
+                            {#The conditional below checks if the user is an ADMIN or a sigle CLIENT to#}
+                            {#.. show the appropiate options#}
                             {% if app.Session.get("user").userType == constant('USER_TYPE_ADMIN', constants) %}
                             <li class="nav-bar-item"><a href="/admin"
                                                         class="nav-bar-item general-text radius-bordered">Admin Panel</a></li>
@@ -36,24 +58,31 @@
                             <li class="nav-bar-item"><a href="/account"
                                                         class="nav-bar-item general-text radius-bordered">Account Panel</a></li>
                             {% endif %}                        
-                        <li class="nav-bar-item"><a href="/logout"
+                            <li class="nav-bar-item"><a href="/logout"
                                                     class="nav-bar-item general-text radius-bordered">Log out</a></li>
                         {% endif %}
                 </ul>
             </div>
         {% endblock %}
+        
+        {#This block will be replaced in child pages when there is an active session to#}
+        {#.. show to the user the appropiate control panel#}
         {% block userContent %}
         {% endblock %}
 
-        {% block contentContainerDiv %}
+            {#This is the div for frame of the content which has the CSS classes which will make it pretty#}
             <div class="content-container margin radius-bordered general-text2">
-            {% endblock %}
+            
+            {#The message block will render the flash messages (notifications) sent from the controllers#}
             {%block messageBlock %}
+                {#The loop below will render if exist, the message with the type "notice" and will call the#}
+                {#.. appropiate css for notices#}
                 {% for flash_message in app.session.flashBag.get('notice') %}
                     <p class="flash-notice general-text2">
                         {{ flash_message }}
                     </p>
                 {% endfor %}
+                {#The next loop does the same than above for the error types#}
                 {% for flash_message in app.session.flashBag.get('error') %}
                     <p class="flash-error general-text2">
                         {{ flash_message }}
@@ -61,12 +90,19 @@
                 {% endfor %}
             {% endblock %}
 
+            {#This is the main content for each page, as this is a base template the block#}
+            {#.. is empty here but it will be one of the most important block for the application#}
             {% block content %}
             {% endblock %}
+        {#Here is the closing of the div for the content container#}
         </div>
+        
+        {#This line is very important to keep separated the contentContainer from the userContent#}
+        {#Although is weird, without this line the two divs will merge into one#}
         <div style="clear:both;"></div>
 
-
+        {#This is the block for the footer, even when the footer is not modified in child pages#}
+        {#.. it's better to keep it as is to allow flexibility when it's necessary#}
         {% block footer %}
             <div class="footer radius-bordered margin general-text3">
                 <p>
@@ -103,6 +139,8 @@
         </form>
         </table>
         -->
+        {#This block is for the javascript code, for now it's emtpy but in the future will be populated#}
+        {#.. to allow validations in the client side#}
         {% block javascripts %}
         {% endblock %}
     </body>

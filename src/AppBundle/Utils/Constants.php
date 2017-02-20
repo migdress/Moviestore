@@ -3,6 +3,9 @@ namespace AppBundle\Utils;
 
 class Constants {
     
+    /* Directories */
+    const DIR_MOVIE_IMAGES = "images/movies";
+    
     /*User types*/
     const USER_TYPE_ADMIN = "ADMIN";
     const USER_TYPE_CLIENT = "CLIENT";

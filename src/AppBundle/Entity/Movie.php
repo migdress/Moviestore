@@ -121,24 +121,31 @@ class Movie {
     }
     
     /*Register Movie*/
-    public static function register(Array $movie_genres, $movie_name, $movie_price, $movie_desc, EntityManager $em){
+public static function register(Array $movie_genres, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em){
         $movie = new Movie();
         $movie->setMovieName($movie_name);
         $movie->setMoviePrice($movie_price);
         $movie->setMovieDesc($movie_desc);
         Movie::registerToDB($movie, $em);
         Movie_has_Genre::registerRecords($movie->getMovieId(), $movie_genres, $em);
-        return 1;
+        if ($imageName != null) {
+            $movie->setMovieImagePath($imageName);
+        }
+        $em->flush();
+        return $movie->getMovieId();
     }
     
-    public static function update($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $movie_desc, EntityManager $em){
+    public static function update($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em){
         $movie = Movie::getTheMovie($movie_id, $em);
         $movie->setMovieName($movie_name);
         $movie->setMoviePrice($movie_price);
         $movie->setMovieDesc($movie_desc);
+        if ($imageName != null) {
+            $movie->setMovieImagePath($imageName);
+        }
         $em->flush();
         Movie_has_Genre::updateRecords($movie_id, $movie_genres, $em);
-        return 1;
+        return $movie->getMovieId();
     }
     
     public static function remove($movie_id, EntityManager $em){
@@ -153,7 +160,9 @@ class Movie {
     /* Fetching all the movies */
     public static function getAllMovies(EntityManager $em) {
         $moviesRepository = $em->getRepository("AppBundle:Movie");
-        $movies = $moviesRepository->findAll();
+        $query = $em->createQuery('SELECT m FROM AppBundle:Movie m ORDER BY m.movie_name ASC');
+        //$movies = $moviesRepository->findAll();
+        $movies = $query->getResult();
         if ($movies) {
             foreach($movies as $movie){
                 $movie->loadGenres($em);

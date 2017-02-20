@@ -9,7 +9,7 @@ use AppBundle\Utils\Constants;
 
 class DefaultController extends Controller {
 
-    /**
+    /** 
      * @Route("/", name="homepage")
      */
     public function indexAction(Request $request) {

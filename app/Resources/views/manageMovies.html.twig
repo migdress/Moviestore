@@ -22,7 +22,11 @@
                         {% for movie in movies%}
                             <tr class="tableList">
                                 <td class="leftSide">
-                                    <img class ="tableList" src="{{ asset('images/noImage.png') }}" alt="movieImage" />
+                                    {% if movie.movieImagePath%}
+                                        <img class ="tableList" src="{{ asset('images/movies/'~movie.movieImagePath) }}" alt="movieImage" />
+                                    {% else %}
+                                        <img class ="tableList" src="{{ asset('images/noImage.png') }}" alt="movieImage" />
+                                    {% endif %}
                                 </td>
                                 <td class="rightSide"> 
                                     <h2 class="general-text2">{{movie.movieName}}</h3>
@@ -54,7 +58,7 @@
                     <div id="registerNewMovie" class="box radius-bordered">
                         <h3 class="general-text">Register a new movie</h3>
                         <p>Please complete the form below to register a new movie</p>
-                        <form action="/registerMovie" method="post">
+                        <form enctype="multipart/form-data" action="/registerMovie" method="post">
                             <table>
                                 <tr>
                                     <td>Movie name:</td>
@@ -85,6 +89,10 @@
                                 <tr>
                                     <td>Movie price: $USD</td>
                                     <td><input type="number" name="registerMoviePrice"></td>
+                                </tr>
+                                <tr>
+                                    <td>Movie Image:</td>
+                                    <td><input type="file" name="registerMovieImage"></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">Movie Description (up to 150 characters):</td>

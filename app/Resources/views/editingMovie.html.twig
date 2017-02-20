@@ -10,7 +10,7 @@
     {% block content %}
         <div class="box radius-bordered">
             <h3 class="general-text">Editing movie</h3>
-            <form action="/updateMovie" method="post">
+            <form enctype="multipart/form-data" action="/updateMovie" method="post">
                 <table>
                     <tr>
                         <td>Movie Id:</td>
@@ -55,6 +55,12 @@
                     <tr>
                         <td>Movie price: $USD</td>
                         <td><input type="number" name="updateMoviePrice" value={{movie.moviePrice}}></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Movie Image (let empty to not update):</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="file" name="updateMovieImage" ></td>
                     </tr>
                     <tr>
                         <td colspan="2">Movie Description (up to 150 characters):</td>

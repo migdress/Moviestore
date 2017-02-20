@@ -1,12 +1,10 @@
+{#This template extends from the main one 'base.html.twig'#}
 {% extends "base.html.twig" %}
-
+{#The block stylesheets is overriden to allow a custom CSS for this page#}
 {% block stylesheets %}
     <link href="{{ asset('css/style_session.css') }}" rel="stylesheet" />
 {% endblock %}
 
-{% block contentContainerDiv %}
-    <div class="content-container radius-bordered general-text2">
-    {% endblock %}
     {% block userContent %}
         <div class="user-container radius-bordered general-text2">
             <h3 class="general-text2">User Control Panel</h3>
