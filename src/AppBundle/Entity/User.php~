@@ -4,12 +4,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\Table(name="User")
  */
-class User {
+class User implements UserInterface, \Serializable{
 
     /**
      * @ORM\Column(type="integer")
@@ -25,17 +26,27 @@ class User {
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $user_lastName;
+    private $user_lastname;
 
     /**
      * @ORM\Column(type="string", length=30)
      */
-    private $user_login;
+    private $user_username;
 
     /**
      * @ORM\Column(type="string", length=80)
      */
     private $user_password;
+    
+    /**
+     * @ORM\Column(type="string", length=45)
+     */
+    private $user_email;
+    
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $user_isActive;
 
     /**
      * @ORM\Column(type="string", length=10)
@@ -44,6 +55,13 @@ class User {
 
     //*******************************Beginning of functions************************************
 
+    
+    public function __construct(){
+        $this->isActive = true;
+        // may not be needed, see section on salt below
+        // $this->salt = md5(uniqid(null, true));
+    }
+    
     /**
      * Set userId
      *
@@ -89,47 +107,47 @@ class User {
     }
 
     /**
-     * Set userLastName
+     * Set userLastname
      *
-     * @param string $userLastName
+     * @param string $userLastname
      *
      * @return User
      */
-    public function setUserLastName($userLastName) {
-        $this->user_lastName = $userLastName;
+    public function setUserLastname($userLastname) {
+        $this->user_lastname = $userLastname;
 
         return $this;
     }
 
     /**
-     * Get userLastName
+     * Get userLastname
      *
      * @return string
      */
-    public function getUserLastName() {
-        return $this->user_lastName;
+    public function getUserLastname() {
+        return $this->user_lastname;
     }
 
     /**
-     * Set userLogin
+     * Set userUsername
      *
-     * @param string $userLogin
+     * @param string $userUsername
      *
      * @return User
      */
-    public function setUserLogin($userLogin) {
-        $this->user_login = $userLogin;
+    public function setUserUsername($userUsername) {
+        $this->user_username = $userUsername;
 
         return $this;
     }
 
     /**
-     * Get userLogin
+     * Get userUsername
      *
      * @return string
      */
-    public function getUserLogin() {
-        return $this->user_login;
+    public function getUserUsername() {
+        return $this->user_username;
     }
 
     /**
@@ -175,9 +193,8 @@ class User {
     public function getUserType() {
         return $this->user_type;
     }
-
+    
     /* Login method */
-
     public static function login($userLogin, $userPassword, EntityManager $em) {
         $userRepository = $em->getRepository("AppBundle:User");
         /* Trying to find the User */
@@ -253,5 +270,55 @@ class User {
             return null;
         }
     }
-
+    
+    /*Remove user from database*/
+    public static function remove($user_id, EntityManager $em){
+        $user = User::getTheUser($user_id, $em);
+        $em->remove($user);
+        $em->flush();
+        return 1;
+    }
+    
+    
+    /******************* These functions need to be declared to comply with the interface implementation*************/
+    
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+    
+    public function eraseCredentials(){
+        
+    }
+    
+    /** @see \Serializable::serialize()  */
+    public function serialize(){
+        return serialize([
+            $this->id,
+            $this->username,
+            $this->password,
+            // see section on salt below
+            // $this->salt,
+        ]);
+    }
+    
+    /** @see \Serializable::unserialize() */
+    public function unserialize($serialized){
+        list(
+                $this->id,
+                $this->user_username,
+                $this->password,
+                // see section on salt below
+                // $this->salt
+                ) = unserialize($serialized);
+    }
+    
+    public function getPassword(){
+        return $this->getUserPassword();
+    }
+    
+    public function getSalt(){
+        /* You *may* need a real salt depending on your encoder */
+        /* see section on salt below */
+    }
 }

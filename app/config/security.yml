@@ -2,20 +2,71 @@
 # http://symfony.com/doc/current/security.html
 security:
 
-    # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    encoders:
+        AppBundle\Entity\User:
+            algorithm: bcrypt
+        #Symfony\Component\Security\Core\User\User: bcrypt
+        #Symfony\Component\Security\Core\User\User:
+         #   algorithm: bcrypt
+          #  cost: 12
+          
+    
     providers:
+        mysql_provider:
+            entity:
+                class: AppBundle:User
+                property: user_username
         in_memory:
-            memory: ~
+            memory:
+                users:
+                    admin:
+                        password: $2y$13$xF9cg5JbK46pED0GH415Fe6BGc89sraHM7RNfeOJeMaPvyL1ynMl6
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
-        main:
+            
+        login:
+            pattern:  ^/login$
+            security: false
+            
+        secured_area:
+            pattern: ^/
+            provider: mysql_provider
+            form_login:
+                login_path: login
+                check_path: login_check
+                default_target_path: /
+                always_use_default_target_path: true
+            logout: 
+                path: /logout
+                target: /
+                
+        #secured_area:
+         #   pattern:    ^/administracion
+          #  provider: user_db
+           # form_login:
+            #    check_path: /administracion/validacion/login_check
+             ##  default_target_path: /administracion
+               # always_use_default_target_path: true
+            #logout:
+             #   path:   /administracion/validacion/logout
+              #  target: /administracion
+        
+        default:
             anonymous: ~
-            # activate different ways to authenticate
+                
+                
+    access_control:
+    - { path: ^/*, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/homepage, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/homepage, roles: ROLE_USER }
+    #- { path: ^/admin, roles: ROLE_ADMIN }
+    #- { path: ^/user, roles: ROLE_USER }
+            
 
             # http_basic: ~
             # http://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate

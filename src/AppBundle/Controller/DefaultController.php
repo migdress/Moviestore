@@ -20,13 +20,13 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/login", name="login")
+     * @//Route("/login", name="login")
      */
-    public function loginAction(Request $request) {
-        return $this->render("login.html.twig", array(
-            "constants" => Constants::get()
-        ));
-    }
+    #public function loginAction(Request $request) {
+    #    return $this->render("login.html.twig", array(
+    #        "constants" => Constants::get()
+    #    ));
+    #}
     
     /**
      * @Route("/logout", name="logout")

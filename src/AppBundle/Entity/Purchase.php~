@@ -53,4 +53,76 @@ class Purchase {
         }
         return true;
     }
+
+    /**
+     * Set userUserId
+     *
+     * @param integer $userUserId
+     *
+     * @return Purchase
+     */
+    public function setUserUserId($userUserId)
+    {
+        $this->User_user_id = $userUserId;
+
+        return $this;
+    }
+
+    /**
+     * Get userUserId
+     *
+     * @return integer
+     */
+    public function getUserUserId()
+    {
+        return $this->User_user_id;
+    }
+
+    /**
+     * Set movieMovieId
+     *
+     * @param integer $movieMovieId
+     *
+     * @return Purchase
+     */
+    public function setMovieMovieId($movieMovieId)
+    {
+        $this->Movie_movie_id = $movieMovieId;
+
+        return $this;
+    }
+
+    /**
+     * Get movieMovieId
+     *
+     * @return integer
+     */
+    public function getMovieMovieId()
+    {
+        return $this->Movie_movie_id;
+    }
+
+    /**
+     * Set purchaseDate
+     *
+     * @param \DateTime $purchaseDate
+     *
+     * @return Purchase
+     */
+    public function setPurchaseDate($purchaseDate)
+    {
+        $this->purchase_date = $purchaseDate;
+
+        return $this;
+    }
+
+    /**
+     * Get purchaseDate
+     *
+     * @return \DateTime
+     */
+    public function getPurchaseDate()
+    {
+        return $this->purchase_date;
+    }
 }

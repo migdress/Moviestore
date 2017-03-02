@@ -1,73 +1,99 @@
-/*==============================================================*/
-/* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2/02/2017 09:00:19                           */
-/*==============================================================*/
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+CREATE SCHEMA IF NOT EXISTS `moviestore` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `moviestore` ;
+
+-- -----------------------------------------------------
+-- Table `moviestore`.`Movie`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`Movie` (
+  `movie_id` INT NOT NULL AUTO_INCREMENT,
+  `movie_name` VARCHAR(30) NOT NULL,
+  `movie_desc` VARCHAR(30) NOT NULL,
+  `movie_price` INT NOT NULL,
+  `movie_imagePath` VARCHAR(30) NULL,
+  PRIMARY KEY (`movie_id`))
+ENGINE = InnoDB;
 
 
-drop table if exists GENRE;
+-- -----------------------------------------------------
+-- Table `moviestore`.`Genre`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`Genre` (
+  `genre_id` INT NOT NULL AUTO_INCREMENT,
+  `genre_name` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`genre_id`))
+ENGINE = InnoDB;
 
-drop table if exists MOVIE;
 
-drop table if exists RENTAL;
+-- -----------------------------------------------------
+-- Table `moviestore`.`Movie_has_Genre`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`Movie_has_Genre` (
+  `Movie_movie_id` INT NOT NULL,
+  `Genre_genre_id` INT NOT NULL,
+  PRIMARY KEY (`Movie_movie_id`, `Genre_genre_id`),
+  INDEX `fk_Movie_has_Genre_Genre1_idx` (`Genre_genre_id` ASC),
+  INDEX `fk_Movie_has_Genre_Movie_idx` (`Movie_movie_id` ASC),
+  CONSTRAINT `fk_Movie_has_Genre_Movie`
+    FOREIGN KEY (`Movie_movie_id`)
+    REFERENCES `moviestore`.`Movie` (`movie_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Movie_has_Genre_Genre1`
+    FOREIGN KEY (`Genre_genre_id`)
+    REFERENCES `moviestore`.`Genre` (`genre_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
-drop table if exists USER;
 
-/*==============================================================*/
-/* Table: GENRE                                                 */
-/*==============================================================*/
-create table GENRE
-(
-   GENRE_ID             int not null,
-   GENRE_NAME           varchar(30) not null,
-   primary key (GENRE_ID)
-);
+-- -----------------------------------------------------
+-- Table `moviestore`.`User`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`User` (
+  `user_id` INT NOT NULL,
+  `user_name` VARCHAR(30) NOT NULL,
+  `user_lastname` VARCHAR(30) NOT NULL,
+  `user_username` VARCHAR(30) NOT NULL,
+  `user_password` VARCHAR(80) NOT NULL,
+  `user_email` VARCHAR(45) NOT NULL,
+  `user_isActive` TINYINT(1) NOT NULL,
+  `user_type` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`user_id`))
+ENGINE = InnoDB;
 
-/*==============================================================*/
-/* Table: MOVIE                                                 */
-/*==============================================================*/
-create table MOVIE
-(
-   MOVIE_ID             int not null,
-   GENRE_ID             int not null,
-   MOVIE_NAME           varchar(30) not null,
-   MOVIE_DESC           varchar(150) not null,
-   primary key (MOVIE_ID)
-);
 
-/*==============================================================*/
-/* Table: RENTAL                                                */
-/*==============================================================*/
-create table RENTAL
-(
-   USER_ID              int not null,
-   MOVIE_ID             int not null,
-   RENTAL_ID            int not null,
-   RENTAL_INITDATE      date not null,
-   RENTAL_ENDDATE       date not null,
-   RENTAL_STATUS        varchar(30) not null,
-   primary key (USER_ID, MOVIE_ID)
-);
+-- -----------------------------------------------------
+-- Table `moviestore`.`Purchase`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`Purchase` (
+  `User_user_id` INT NOT NULL,
+  `Movie_movie_id` INT NOT NULL,
+  `purchase_date` DATE NOT NULL,
+  PRIMARY KEY (`User_user_id`, `Movie_movie_id`),
+  INDEX `fk_User_has_Movie_Movie1_idx` (`Movie_movie_id` ASC),
+  INDEX `fk_User_has_Movie_User1_idx` (`User_user_id` ASC),
+  CONSTRAINT `fk_User_has_Movie_User1`
+    FOREIGN KEY (`User_user_id`)
+    REFERENCES `moviestore`.`User` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User_has_Movie_Movie1`
+    FOREIGN KEY (`Movie_movie_id`)
+    REFERENCES `moviestore`.`Movie` (`movie_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
-/*==============================================================*/
-/* Table: USER                                                  */
-/*==============================================================*/
-create table USER
-(
-   USER_ID              int not null,
-   USER_NAME            varchar(30) not null,
-   USER_LASTNAME        varchar(30) not null,
-   USER_LOGIN           varchar(30) not null,
-   USER_PASSWORD        varchar(80) not null,
-   USER_TYPE            varchar(10) not null,
-   primary key (USER_ID)
-);
 
-alter table MOVIE add constraint FK_HAS foreign key (GENRE_ID)
-      references GENRE (GENRE_ID) on delete restrict on update restrict;
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-alter table RENTAL add constraint FK_RENTAL foreign key (USER_ID)
-      references USER (USER_ID) on delete restrict on update restrict;
 
-alter table RENTAL add constraint FK_RENTAL2 foreign key (MOVIE_ID)
-      references MOVIE (MOVIE_ID) on delete restrict on update restrict;
-
+-- Inserting Admin User --
+insert into user(user_id, user_name, user_lastname, user_username, user_password, user_email, user_isActive, user_type)
+	values(1, "admin", "", "admin", "password", "", true, "ADMIN");
