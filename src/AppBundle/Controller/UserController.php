@@ -12,33 +12,40 @@ use AppBundle\Entity\Purchase;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class UserController extends Controller {
-
+    
     /**
-     * @Route("/loginAttempt", name="loginAttempt")
+     * @Route("/loginSuccess", name="loginSuccess")
      */
-    public function loginAttemptAction(Request $request) {
-        $userLogin = $request->request->get("login");
-        $userPassword = $request->request->get("password");
-        $user = User::login($userLogin, $userPassword, $this->getDoctrine()->getManager());
-        $pageToRender = "";
-        if ($user) {
-            $request->getSession()->set("user", $user);
-            if ($user->getUserType() == Constants::USER_TYPE_ADMIN) {
-                $pageToRender = "admin.html.twig";
-            } else {
-                $pageToRender = "account.html.twig";
-            }
-            return $this->render($pageToRender, array(
-                        "user" => $user,
-                        "constants" => Constants::get()
-            ));
-        } else {
-            $this->addFlash("error", "Invalid data");
-            return $this->render("login.html.twig", [
-                        "constants" => Constants::get()
-            ]);
-        }
+    public function loginSuccessAction(Request $request){
+        
     }
+
+    #/**
+    # * @Route("/loginAttempt", name="loginAttempt")
+    # */
+    #public function loginAttemptAction(Request $request) {
+    #    $userLogin = $request->request->get("login");
+    #    $userPassword = $request->request->get("password");
+    #    $user = User::login($userLogin, $userPassword, $this->getDoctrine()->getManager());
+    #    $pageToRender = "";
+    #    if ($user) {
+    #        $request->getSession()->set("user", $user);
+    #        if ($user->getUserType() == Constants::USER_TYPE_ADMIN) {
+    #            $pageToRender = "admin.html.twig";
+    #        } else {
+    #           $pageToRender = "account.html.twig";
+    #        }
+    #        return $this->render($pageToRender, array(
+    #                    "user" => $user,
+    #                    "constants" => Constants::get()
+    #        ));
+    #    } else {
+    #        $this->addFlash("error", "Invalid data");
+    #        return $this->render("login.html.twig", [
+    #                    "constants" => Constants::get()
+    #        ]);
+    #    }
+    #}
 
     /**
      * @Route("/admin", name="admin")

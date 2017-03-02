@@ -61,7 +61,6 @@ CREATE TABLE IF NOT EXISTS `moviestore`.`User` (
   `user_password` VARCHAR(80) NOT NULL,
   `user_email` VARCHAR(45) NOT NULL,
   `user_isActive` TINYINT(1) NOT NULL,
-  `user_type` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`user_id`))
 ENGINE = InnoDB;
 
@@ -89,11 +88,56 @@ CREATE TABLE IF NOT EXISTS `moviestore`.`Purchase` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `moviestore`.`Role`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`Role` (
+  `role_id` INT NOT NULL,
+  `role_string` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`role_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `moviestore`.`User_has_Role`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `moviestore`.`User_has_Role` (
+  `User_user_id` INT NOT NULL,
+  `Role_role_id` INT NOT NULL,
+  PRIMARY KEY (`User_user_id`, `Role_role_id`),
+  INDEX `fk_User_has_Role_Role1_idx` (`Role_role_id` ASC),
+  INDEX `fk_User_has_Role_User1_idx` (`User_user_id` ASC),
+  CONSTRAINT `fk_User_has_Role_User1`
+    FOREIGN KEY (`User_user_id`)
+    REFERENCES `moviestore`.`User` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User_has_Role_Role1`
+    FOREIGN KEY (`Role_role_id`)
+    REFERENCES `moviestore`.`Role` (`role_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
+
+
 -- Inserting Admin User --
-insert into user(user_id, user_name, user_lastname, user_username, user_password, user_email, user_isActive, user_type)
-	values(1, "admin", "", "admin", "password", "", true, "ADMIN");
+insert into Role(role_id, role_string) values(1, "ROLE_ADMIN");
+insert into Role(role_id, role_string) values(2, "ROLE_USER");
+
+insert into User(user_id, user_name, user_lastname, user_username, user_password, user_email, user_isActive)
+	values(1, "admin", "", "admin", "$2y$13$xF9cg5JbK46pED0GH415Fe6BGc89sraHM7RNfeOJeMa...", "", true);
+
+insert into User(user_id, user_name, user_lastname, user_username, user_password, user_email, user_isActive)
+  values(2, "Jhon", "Doe", "jdoe", "$2y$13$F6d6c89xJlKu.9AnCvHI4OD.N34rtWqXfDl3WDUDuh8g6.dPtX/x.", "", true);
+
+insert into User_has_Role(User_user_id, Role_role_id) values(1,1);
+insert into User_has_Role(User_user_id, Role_role_id) values(2,2);
+
+
