@@ -48,10 +48,9 @@ class User implements UserInterface, \Serializable{
      */
     private $user_isActive;
 
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
-    private $user_type;
+    /* This is not a property of the table in the DB, is an attribute whose function
+        is hold the role strings */
+    private $user_roles = array();
 
     //*******************************Beginning of functions************************************
 
@@ -172,36 +171,16 @@ class User implements UserInterface, \Serializable{
         return $this->user_password;
     }
 
-    /**
-     * Set userType
-     *
-     * @param string $userType
-     *
-     * @return User
-     */
-    public function setUserType($userType) {
-        $this->user_type = $userType;
-
-        return $this;
-    }
-
-    /**
-     * Get userType
-     *
-     * @return string
-     */
-    public function getUserType() {
-        return $this->user_type;
-    }
     
-    /* Login method */
+    
+    /* Old login method, Previous to the symfony security system */
     public static function login($userLogin, $userPassword, EntityManager $em) {
         $userRepository = $em->getRepository("AppBundle:User");
         /* Trying to find the User */
         if ($user = $userRepository->findOneBy(array(
-            "user_login" => $userLogin
+            "user_username" => $userLogin
                 ))) {
-            if ($user->getUserPassword() == sha1($userPassword)) {
+            if ($user->getPassword() == sha1($userPassword)) {
                 $return = $user;
                 return $return;
             } else {
@@ -279,12 +258,25 @@ class User implements UserInterface, \Serializable{
         return 1;
     }
     
+    public static function loadRoles(EntityManager $em){
+        $userRoles = User_has_Role::getTheRoles($this->user_id, $em);
+        if($userRoles){
+            $i = 0;
+            foreach($userRoles as $userRole){
+                $this->user_roles[$i] = $userRole->getRoleString();
+                $i++;
+            }
+        }
+    }
+    
     
     /******************* These functions need to be declared to comply with the interface implementation*************/
     
     public function getRoles()
     {
-        return array('ROLE_USER');
+        #return array('ROLE_USER');
+        #return array('ROLE_ADMIN');
+        return $this->user_roles;
     }
     
     public function eraseCredentials(){
@@ -294,31 +286,80 @@ class User implements UserInterface, \Serializable{
     /** @see \Serializable::serialize()  */
     public function serialize(){
         return serialize([
-            $this->id,
-            $this->username,
-            $this->password,
+            $this->user_id,
+            $this->user_username,
+            $this->user_password,
             // see section on salt below
             // $this->salt,
         ]);
     }
     
     /** @see \Serializable::unserialize() */
-    public function unserialize($serialized){
+    public function unserialize($serialized) {
         list(
-                $this->id,
+                $this->user_id,
                 $this->user_username,
-                $this->password,
+                $this->user_password,
                 // see section on salt below
                 // $this->salt
                 ) = unserialize($serialized);
     }
-    
+
     public function getPassword(){
         return $this->getUserPassword();
     }
     
     public function getSalt(){
         /* You *may* need a real salt depending on your encoder */
-        /* see section on salt below */
+        /* If the encoder is bcrypt, there is not problem with this method returning null */
+        return null;
+    }
+
+    /**
+     * Set userEmail
+     *
+     * @param string $userEmail
+     *
+     * @return User
+     */
+    public function setUserEmail($userEmail)
+    {
+        $this->user_email = $userEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get userEmail
+     *
+     * @return string
+     */
+    public function getUserEmail()
+    {
+        return $this->user_email;
+    }
+
+    /**
+     * Set userIsActive
+     *
+     * @param boolean $userIsActive
+     *
+     * @return User
+     */
+    public function setUserIsActive($userIsActive)
+    {
+        $this->user_isActive = $userIsActive;
+
+        return $this;
+    }
+
+    /**
+     * Get userIsActive
+     *
+     * @return boolean
+     */
+    public function getUserIsActive()
+    {
+        return $this->user_isActive;
     }
 }

@@ -48,10 +48,9 @@ class User implements UserInterface, \Serializable{
      */
     private $user_isActive;
 
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
-    private $user_type;
+    /* This is not a property of the table in the DB, is an attribute whose function
+        is hold the role strings */
+    private $user_roles = array();
 
     //*******************************Beginning of functions************************************
 
@@ -172,29 +171,9 @@ class User implements UserInterface, \Serializable{
         return $this->user_password;
     }
 
-    /**
-     * Set userType
-     *
-     * @param string $userType
-     *
-     * @return User
-     */
-    public function setUserType($userType) {
-        $this->user_type = $userType;
-
-        return $this;
-    }
-
-    /**
-     * Get userType
-     *
-     * @return string
-     */
-    public function getUserType() {
-        return $this->user_type;
-    }
     
-    /* Login method */
+    
+    /* Old login method, Previous to the symfony security system */
     public static function login($userLogin, $userPassword, EntityManager $em) {
         $userRepository = $em->getRepository("AppBundle:User");
         /* Trying to find the User */
@@ -279,12 +258,25 @@ class User implements UserInterface, \Serializable{
         return 1;
     }
     
+    public static function loadRoles(EntityManager $em){
+        $userRoles = User_has_Role::getTheRoles($this->user_id, $em);
+        if($userRoles){
+            $i = 0;
+            foreach($userRoles as $userRole){
+                $this->user_roles[$i] = $userRole->getRoleString();
+                $i++;
+            }
+        }
+    }
+    
     
     /******************* These functions need to be declared to comply with the interface implementation*************/
     
     public function getRoles()
     {
-        return array('ROLE_USER');
+        #return array('ROLE_USER');
+        #return array('ROLE_ADMIN');
+        return $this->user_roles;
     }
     
     public function eraseCredentials(){
