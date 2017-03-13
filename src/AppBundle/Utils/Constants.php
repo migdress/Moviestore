@@ -7,8 +7,8 @@ class Constants {
     const DIR_MOVIE_IMAGES = "images/movies";
     
     /*User types*/
-    const USER_TYPE_ADMIN = "ADMIN";
-    const USER_TYPE_CLIENT = "CLIENT";
+    const USER_TYPE_ADMIN = "ROLE_ADMIN";
+    const USER_TYPE_CLIENT = "ROLE_USER";
     
     /*Flash message types*/
     const FLASH_ERROR = "error";

@@ -9,10 +9,18 @@ use AppBundle\Utils\Constants;
 
 class DefaultController extends Controller {
 
+    
     /** 
-     * @Route("/", name="homepage")
+     * @Route("/", name="/")
      */
     public function indexAction(Request $request) {
+        return $this->redirectToRoute("homepage");
+    }
+    
+    /** 
+     * @Route("/home", name="homepage")
+     */
+    public function homeAction(Request $request) {
         // replace this example code with whatever you need
         return $this->render('index.html.twig', array(
                 "constants" => Constants::get()

@@ -42,7 +42,8 @@
                     <li class="nav-bar-item"><a href="{{ path('homepage') }}"
                                                 class="nav-bar-item general-text radius-bordered">Home</a></li>
                         {#the Log in and register <li> elements are just rendered when there is not an active session#}
-                        {% if not app.Session.get("user")  %}
+                        {#{% if not app.Session.get("user")  %}#}
+                        {% if not is_granted('IS_AUTHENTICATED_FULLY')  %}
                         <li class="nav-bar-item"><a href="/login"
                                                     class="nav-bar-item general-text radius-bordered">Log in</a></li>
                         <li class="nav-bar-item"><a href="/register"
@@ -51,10 +52,12 @@
                         {% else %}
                             {#The conditional below checks if the user is an ADMIN or a sigle CLIENT to#}
                             {#.. show the appropiate options#}
-                            {% if app.Session.get("user").userType == constant('USER_TYPE_ADMIN', constants) %}
+                            {#{% if app.Session.get("user").userType == constant('USER_TYPE_ADMIN', constants) %}#}
+                            {% if is_granted(constant('USER_TYPE_ADMIN', constants))%}
                             <li class="nav-bar-item"><a href="/admin"
                                                         class="nav-bar-item general-text radius-bordered">Admin Panel</a></li>
-                            {% elseif app.Session.get("user").userType == constant('USER_TYPE_CLIENT', constants) %}
+                            {#{% elseif app.Session.get("user").userType == constant('USER_TYPE_CLIENT', constants) %}#}
+                            {% elseif is_granted(constant('USER_TYPE_CLIENT', constants)) %}
                             <li class="nav-bar-item"><a href="/account"
                                                         class="nav-bar-item general-text radius-bordered">Account Panel</a></li>
                             {% endif %}                        

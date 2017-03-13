@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -22,8 +23,19 @@ class Role {
      */
     private $role_string;
     
+    /**
+     * 
+     * @ORM\OneToMany(targetEntity="User_has_Role", mappedBy="role")
+     */
+    private $user_has_roles;
+    
     /*************************************** Begninning of functions *********************************/
 
+    
+    public function __construct() {
+        $this->user_has_roles = new ArrayCollection();
+    }
+    
     /**
      * Set roleId
      *
@@ -89,5 +101,39 @@ class Role {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Add userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     *
+     * @return Role
+     */
+    public function addUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles[] = $userHasRole;
+
+        return $this;
+    }
+
+    /**
+     * Remove userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     */
+    public function removeUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles->removeElement($userHasRole);
+    }
+
+    /**
+     * Get userHasRoles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserHasRoles()
+    {
+        return $this->user_has_roles;
     }
 }

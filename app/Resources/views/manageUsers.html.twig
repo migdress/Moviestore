@@ -14,15 +14,16 @@
                 href="#registerNewUser">Register a new Genre</a>
         </div><br>
         <div class="box radius-bordered">
-            <h3 class="general-text">All registered genres</h3>
+            <h3 class="general-text">All registered users</h3>
             <table class="users">
                 <tr class="users">
                     <th class="users">Id</th>
                     <th class="users">Name</th>
                     <th class="users">Lastname</th>
-                    <th class="users">Login</th>
+                    <th class="users">Username</th>
                     <th class="users">Password</th>
-                    <th class="users">Type</th>
+                    <th class="users">Email</th>
+                    <th class="users">Role</th>
                     <th class="users">Actions</th>
                 </tr>
                 {% for user in users %}
@@ -30,9 +31,10 @@
                         <td class="users">{{ user.userId }}</td>
                         <td class="users">{{ user.userName}}</td>
                         <td class="users">{{ user.userLastName}}</td>
-                        <td class="users">{{ user.userLogin}}</td>
+                        <td class="users">{{ user.userUsername}}</td>
                         <td class="users-password">{{ user.userPassword}}</p></td>
-                        <td class="users">{{ user.userType}}</td>
+                        <td class="users">{{ user.userEmail}}</p></td>
+                        <td class="users">{{ user.userRoles}}</td>
 
                         <td class="movies"><a
                                 class="actionButton general-text radius-bordered"
@@ -71,10 +73,14 @@
                         <td><input type="password" name="registerUserPassword"></td>
                     </tr>
                     <tr>
+                        <td>User email:</td>
+                        <td><input type="text" name="registerUserEmail"></td>
+                    </tr>
+                    <tr>
                         <td>User type:</td>
                         <td><select name="registerUserType">
-                                <option value="CLIENT">Client</option>
-                                <option value="ADMIN">Admin</option>
+                                <option value="2">Client</option>
+                                <option value="1">Admin</option>
                             </select></td>
                     </tr>
                     <tr>

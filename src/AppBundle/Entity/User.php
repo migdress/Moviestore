@@ -5,6 +5,9 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Security\Core\User\UserInterface;
+use AppBundle\Utils\Constants;
+use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\User_has_Role;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
@@ -44,6 +47,21 @@ class User implements UserInterface, \Serializable{
     private $user_email;
     
     /**
+     * 
+     * @ORM\OneToMany(targetEntity="Purchase", mappedBy="user")
+     */
+    private $purchases;
+    
+    /**
+     * The cascade=persist attribute below forces this entity to persist the changes to
+     * the entity with the association ORM\OneToMany
+     * 
+     * @ORM\OneToMany(targetEntity="User_has_Role", mappedBy="user", cascade={"persist"})
+     */
+    private $user_has_roles;
+    
+    
+    /**
      * @ORM\Column(type="boolean")
      */
     private $user_isActive;
@@ -56,6 +74,8 @@ class User implements UserInterface, \Serializable{
 
     
     public function __construct(){
+        $this->products = new ArrayCollection();
+        $this->user_has_roles = new ArrayCollection();
         $this->isActive = true;
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid(null, true));
@@ -170,6 +190,15 @@ class User implements UserInterface, \Serializable{
     public function getUserPassword() {
         return $this->user_password;
     }
+    
+    /**
+     * Get userRoles
+     *
+     * @return string
+     */
+    public function getUserRoles() {
+        return implode(",",$this->getRoles());
+    }
 
     
     
@@ -203,27 +232,41 @@ class User implements UserInterface, \Serializable{
         }
     }
 
-    public static function register($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_type, EntityManager $em) {        
+    public static function register($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_email, $user_type, EntityManager $em) {        
         $user = new User();
         $user->setUserId($user_id);
         $user->setUserName($user_name);
         $user->setUserLastName($user_lastName);
-        $user->setUserLogin($user_login);
+        $user->setUserUsername($user_login);
         $user->setUserPassword(sha1($user_password));
-        $user->setUserType($user_type);
+        $user->setUserEmail($user_email);
+        $user->setUserIsActive(true);
         User::registerToDB($user, $em);
+        $userHasRole = new User_has_Role();
+        $userHasRole->setRole(Role::getTheRole($user_type, $em));
+        $userHasRole->setUser($user);
+        $user->addUserHasRole($userHasRole);
+        $em->flush();
         return 1;
     }
     
-    public static function update($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_type, EntityManager $em){
+    public static function update($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_email, $user_type, EntityManager $em){
         $user = User::getTheUser($user_id, $em);
         $user->setUserName($user_name);
         $user->setUserLastName($user_lastName);
-        $user->setUserLogin($user_login);
+        $user->setUserUsername($user_login);
         if($user_password != ""){
             $user->setUserPassword(sha1($user_password));
         }
-        $user->setUserType($user_type);
+        $user->setUserEmail($user_email);
+        $currentRole = $user->getUserHasRoles();
+        if (!$currentRole[0]->getRole()->getRoleId() == $user_type) {
+            User_has_Role::removeRecords($user_id, $em);
+            $userHasRole = new User_has_Role();
+            $userHasRole->setRole(Role::getTheRole($user_type, $em));
+            $userHasRole->setUser($user);
+            $user->addUserHasRole($userHasRole);
+        }
         $em->flush();
         return 1;
     }
@@ -258,7 +301,7 @@ class User implements UserInterface, \Serializable{
         return 1;
     }
     
-    public static function loadRoles(EntityManager $em){
+    public function loadRoles(EntityManager $em){
         $userRoles = User_has_Role::getTheRoles($this->user_id, $em);
         if($userRoles){
             $i = 0;
@@ -269,19 +312,43 @@ class User implements UserInterface, \Serializable{
         }
     }
     
+    /*This function has to be called after calling loadRoles()*/
+    public function hasTheRole($ROLE_STRING){
+        if ($this->user_roles != null) {
+            foreach ($this->user_roles as $role) {
+                if ($role == $ROLE_STRING) {
+                    return true;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+    
     
     /******************* These functions need to be declared to comply with the interface implementation*************/
     
     public function getRoles()
     {
-        #return array('ROLE_USER');
-        #return array('ROLE_ADMIN');
-        return $this->user_roles;
+        $rolesArray = array();
+        $i = 0;
+        foreach($this->user_has_roles as $user_has_role){
+            $rolesArray[$i] = $user_has_role->getRole()->getRoleString();
+        }
+        
+        return $rolesArray;
     }
     
     public function eraseCredentials(){
         
     }
+    
+    /*
+     * IMPORTANT: When retrieving the user object in controllers via 
+     * security system, the user object will be able to use only the 
+     * attributes which have been serialized, so keep that in mind when
+     * serializing attributes below 
+     */
     
     /** @see \Serializable::serialize()  */
     public function serialize(){
@@ -361,5 +428,73 @@ class User implements UserInterface, \Serializable{
     public function getUserIsActive()
     {
         return $this->user_isActive;
+    }
+
+    /**
+     * Add purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     *
+     * @return User
+     */
+    public function addPurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases[] = $purchase;
+
+        return $this;
+    }
+
+    /**
+     * Remove purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     */
+    public function removePurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases->removeElement($purchase);
+    }
+
+    /**
+     * Get purchases
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPurchases()
+    {
+        return $this->purchases;
+    }
+
+    /**
+     * Add userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     *
+     * @return User
+     */
+    public function addUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles[] = $userHasRole;
+
+        return $this;
+    }
+
+    /**
+     * Remove userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     */
+    public function removeUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles->removeElement($userHasRole);
+    }
+
+    /**
+     * Get userHasRoles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserHasRoles()
+    {
+        return $this->user_has_roles;
     }
 }

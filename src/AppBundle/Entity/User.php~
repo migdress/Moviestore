@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Security\Core\User\UserInterface;
+use AppBundle\Utils\Constants;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
@@ -44,6 +46,19 @@ class User implements UserInterface, \Serializable{
     private $user_email;
     
     /**
+     * 
+     * @ORM\OneToMany(targetEntity="Purchase", mappedBy="user")
+     */
+    private $purchases;
+    
+    /**
+     * 
+     * @ORM\OneToMany(targetEntity="User_has_Role", mappedBy="user")
+     */
+    private $user_has_roles;
+    
+    
+    /**
      * @ORM\Column(type="boolean")
      */
     private $user_isActive;
@@ -56,6 +71,8 @@ class User implements UserInterface, \Serializable{
 
     
     public function __construct(){
+        $this->products = new ArrayCollection();
+        $this->user_has_roles = new ArrayCollection();
         $this->isActive = true;
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid(null, true));
@@ -258,7 +275,7 @@ class User implements UserInterface, \Serializable{
         return 1;
     }
     
-    public static function loadRoles(EntityManager $em){
+    public function loadRoles(EntityManager $em){
         $userRoles = User_has_Role::getTheRoles($this->user_id, $em);
         if($userRoles){
             $i = 0;
@@ -266,6 +283,19 @@ class User implements UserInterface, \Serializable{
                 $this->user_roles[$i] = $userRole->getRoleString();
                 $i++;
             }
+        }
+    }
+    
+    /*This function has to be called after calling loadRoles()*/
+    public function hasTheRole($ROLE_STRING){
+        if ($this->user_roles != null) {
+            foreach ($this->user_roles as $role) {
+                if ($role == $ROLE_STRING) {
+                    return true;
+                }
+            }
+        } else {
+            return false;
         }
     }
     
@@ -282,6 +312,13 @@ class User implements UserInterface, \Serializable{
     public function eraseCredentials(){
         
     }
+    
+    /*
+     * IMPORTANT: When retrieving the user object in controllers via 
+     * security system, the user object will be able to use only the 
+     * attributes which have been serialized, so keep that in mind when
+     * serializing attributes below 
+     */
     
     /** @see \Serializable::serialize()  */
     public function serialize(){
@@ -361,5 +398,73 @@ class User implements UserInterface, \Serializable{
     public function getUserIsActive()
     {
         return $this->user_isActive;
+    }
+
+    /**
+     * Add purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     *
+     * @return User
+     */
+    public function addPurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases[] = $purchase;
+
+        return $this;
+    }
+
+    /**
+     * Remove purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     */
+    public function removePurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases->removeElement($purchase);
+    }
+
+    /**
+     * Get purchases
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPurchases()
+    {
+        return $this->purchases;
+    }
+
+    /**
+     * Add userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     *
+     * @return User
+     */
+    public function addUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles[] = $userHasRole;
+
+        return $this;
+    }
+
+    /**
+     * Remove userHasRole
+     *
+     * @param \AppBundle\Entity\User_has_Role $userHasRole
+     */
+    public function removeUserHasRole(\AppBundle\Entity\User_has_Role $userHasRole)
+    {
+        $this->user_has_roles->removeElement($userHasRole);
+    }
+
+    /**
+     * Get userHasRoles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserHasRoles()
+    {
+        return $this->user_has_roles;
     }
 }

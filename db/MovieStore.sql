@@ -69,10 +69,11 @@ ENGINE = InnoDB;
 -- Table `moviestore`.`Purchase`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `moviestore`.`Purchase` (
+  `purchase_id` INT NOT NULL,
   `User_user_id` INT NOT NULL,
   `Movie_movie_id` INT NOT NULL,
   `purchase_date` DATE NOT NULL,
-  PRIMARY KEY (`User_user_id`, `Movie_movie_id`),
+  PRIMARY KEY (`purchase_id`, `User_user_id`, `Movie_movie_id`),
   INDEX `fk_User_has_Movie_Movie1_idx` (`Movie_movie_id` ASC),
   INDEX `fk_User_has_Movie_User1_idx` (`User_user_id` ASC),
   CONSTRAINT `fk_User_has_Movie_User1`
@@ -123,7 +124,6 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
 
 
 

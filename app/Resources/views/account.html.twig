@@ -10,11 +10,11 @@
             <h3 class="general-text2">User Control Panel</h3>
             <ul class="nav-bar">
                 <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("search") }}">Search</a></li>
-                <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("userRentals") }}">My rentals</a></li>
+                <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="{{ path("userRentals") }}">My Movies</a></li>
                 <li class="side-nav-bar-item"><a class="side-nav-bar-item general-text radius-bordered" href="#">MyInfo</a></li>
             </ul>
         </div>
     {% endblock %}
     {% block content %}
-        <p>Welcome to Movieland {{ user.userName }}! in the left sidebar you'll fin your info</p>
+        <p>Welcome to Movieland {{ app.user.userName }}! in the left sidebar you'll fin your info</p>
     {% endblock %}

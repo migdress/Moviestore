@@ -34,8 +34,8 @@ h3{
 }
 
 .margin {
-	margin-left: 10%;
-	margin-right: 10%;
+	margin-left: 5%;
+	margin-right: 5%;
 }
 
 .radius-bordered {
@@ -192,7 +192,7 @@ h2 {
 	.user-container {
 		float: left;
 		width: 17.5%;
-		margin-left: 10%;
+		margin-left: 5%;
 		padding: 5px;
 		display: inline-block;
 		background-color: #195466;
@@ -200,11 +200,11 @@ h2 {
 	}
 	.content-container {
 		float: left;
-		width: 50%;
-		margin-right: 10%;
-		margin-left: 1%;
+		width: 69%;
+		margin-right: 10px;
+		margin-left: 10px;
 		text-align: justify;
-		padding: 10px 5% 5% 5%;
+		padding: 10px 10px 10px 10px;
 		display: inline-block;
 		background-color: #195466;
 	}
@@ -283,8 +283,8 @@ td.moviesDesc{
 
 .box{
 	padding-top: 5px;
-	padding-left: 10px;	
-        padding-Right: 10px;
+	padding-left: 5px;	
+        padding-Right: 5px;
 	padding-bottom: 5px;
 	/*border: 2px solid #023342;*/
         background-color: #2d7991/*#0a7091*//*#2d7991*/;

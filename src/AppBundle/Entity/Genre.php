@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
@@ -22,6 +23,20 @@ class Genre {
      * @ORM\Column(type="string", length=30)
      */
     private $genre_name;
+    
+    
+    /**
+     * 
+     * @ORM\OneToMany(targetEntity="Movie_has_Genre", mappedBy="genre")
+     */
+    private $movie_has_genres;
+    
+    
+    /************************ Beginning of functions **********************/
+    
+    public function __construct(){
+        $this->movie_has_genres = new ArrayCollection();
+    }
 
     /**
      * Set genreId
@@ -130,4 +145,38 @@ class Genre {
         return 1;
     }
 
+
+    /**
+     * Add movieHasGenre
+     *
+     * @param \AppBundle\Entity\Movie_has_Genre $movieHasGenre
+     *
+     * @return Genre
+     */
+    public function addMovieHasGenre(\AppBundle\Entity\Movie_has_Genre $movieHasGenre)
+    {
+        $this->movie_has_genres[] = $movieHasGenre;
+
+        return $this;
+    }
+
+    /**
+     * Remove movieHasGenre
+     *
+     * @param \AppBundle\Entity\Movie_has_Genre $movieHasGenre
+     */
+    public function removeMovieHasGenre(\AppBundle\Entity\Movie_has_Genre $movieHasGenre)
+    {
+        $this->movie_has_genres->removeElement($movieHasGenre);
+    }
+
+    /**
+     * Get movieHasGenres
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMovieHasGenres()
+    {
+        return $this->movie_has_genres;
+    }
 }

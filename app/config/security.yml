@@ -16,33 +16,49 @@ security:
             entity:
                 class: AppBundle:User
                 property: user_username
-        in_memory:
-            memory:
-                users:
-                    admin:
-                        password: $2y$13$xF9cg5JbK46pED0GH415Fe6BGc89sraHM7RNfeOJeMaPvyL1ynMl6
+        #in_memory:
+            #memory:
+               #users:
+                    #admin:
+                        #password: $2y$13$xF9cg5JbK46pED0GH415Fe6BGc89sraHM7RNfeOJeMaPvyL1ynMl6
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        
+        # When a Firewall is declared with the attribute security as false
+        # to give the anon user a door for the secured area
+        # the end of the pattern hast to have a '$', if not, the security system won't work
+        
+        #login:
+            #pattern:  ^/login$
+            #security: false
             
-        login:
-            pattern:  ^/login$
-            security: false
+        #home:
+            #pattern:  ^/home$
+            #security: false
+        default:
+            pattern: ^/login$
+            anonymous: ~
             
-        secured_area:
+            
+            
+        main:
             pattern: ^/
             provider: mysql_provider
             form_login:
-                login_path: login
-                check_path: login_check
-                default_target_path: loginAttempt
+                login_path: /login
+                check_path: /login_check
+                default_target_path: loginSuccess
                 always_use_default_target_path: true
             logout: 
                 path: /logout
-                target: /
+                target: /home
+            security: true
+        
+        
                 
         #secured_area:
          #   pattern:    ^/administracion
@@ -54,18 +70,13 @@ security:
             #logout:
              #   path:   /administracion/validacion/logout
               #  target: /administracion
-        
-        default:
-            anonymous: ~
+
                 
                 
     access_control:
-    - { path: ^/*, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/homepage, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/homepage, roles: ROLE_USER }
-    #- { path: ^/admin, roles: ROLE_ADMIN }
-    #- { path: ^/user, roles: ROLE_USER }
+    - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/, roles: ROLE_ADMIN }
+    - { path: ^/, roles: ROLE_USER }
             
 
             # http_basic: ~

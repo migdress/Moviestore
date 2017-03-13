@@ -5,47 +5,62 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Entity\Movie_has_Genre;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="Movie")
  */
 class Movie {
-	
-	/**
-	 * @ORM\Column(type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $movie_id;
-	
-	
-	/**
-	 * @ORM\Column(type="string",length=30)
-	 */
-	private $movie_name;
-	
-	/**
-	 * @ORM\Column(type="string",length=150)
-	 */
-	private $movie_desc;
-        
-        /**
-	 * @ORM\Column(type="integer")
-	 */
-	private $movie_price;
-        
-        /**
-	 * @ORM\Column(type="string", length=30, nullable=TRUE)
-         *
-	 */
-	private $movie_imagePath;
-        
-        private $movie_genres = array();
-        
+
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $movie_id;
+
+    /**
+     * @ORM\Column(type="string",length=30)
+     */
+    private $movie_name;
+
+    /**
+     * @ORM\Column(type="string",length=150)
+     */
+    private $movie_desc;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $movie_price;
+
+    /**
+     * @ORM\Column(type="string", length=30, nullable=TRUE)
+     *
+     */
+    private $movie_imagePath;
+
+    /**
+     * 
+     * @ORM\OneToMany(targetEntity="Purchase", mappedBy="movie")
+     */
+    private $purchases;
+    
+    /**
+     * 
+     * @ORM\OneToMany(targetEntity="Movie_has_Genre", mappedBy="movie")
+     */
+    private $movie_has_genres;
     
     
-	
+    /**********************Beginning of functions****************************/
+    public function __construct() {
+        $this->purchases = new ArrayCollection();
+        $this->movie_has_genres = new ArrayCollection();
+    }
+    
+    private $movie_genres = array();
 
     /**
      * Set movieId
@@ -54,8 +69,7 @@ class Movie {
      *
      * @return Movie
      */
-    public function setMovieId($movieId)
-    {
+    public function setMovieId($movieId) {
         $this->movie_id = $movieId;
 
         return $this;
@@ -66,11 +80,9 @@ class Movie {
      *
      * @return integer
      */
-    public function getMovieId()
-    {
+    public function getMovieId() {
         return $this->movie_id;
     }
-
 
     /**
      * Set movieName
@@ -79,8 +91,7 @@ class Movie {
      *
      * @return Movie
      */
-    public function setMovieName($movieName)
-    {
+    public function setMovieName($movieName) {
         $this->movie_name = $movieName;
 
         return $this;
@@ -91,8 +102,7 @@ class Movie {
      *
      * @return string
      */
-    public function getMovieName()
-    {
+    public function getMovieName() {
         return $this->movie_name;
     }
 
@@ -103,8 +113,7 @@ class Movie {
      *
      * @return Movie
      */
-    public function setMovieDesc($movieDesc)
-    {
+    public function setMovieDesc($movieDesc) {
         $this->movie_desc = $movieDesc;
 
         return $this;
@@ -115,13 +124,13 @@ class Movie {
      *
      * @return string
      */
-    public function getMovieDesc()
-    {
+    public function getMovieDesc() {
         return $this->movie_desc;
     }
-    
-    /*Register Movie*/
-public static function register(Array $movie_genres, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em){
+
+    /* Register Movie */
+
+    public static function register(Array $movie_genres, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em) {
         $movie = new Movie();
         $movie->setMovieName($movie_name);
         $movie->setMoviePrice($movie_price);
@@ -134,8 +143,8 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
         $em->flush();
         return $movie->getMovieId();
     }
-    
-    public static function update($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em){
+
+    public static function update($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $imageName, $movie_desc, EntityManager $em) {
         $movie = Movie::getTheMovie($movie_id, $em);
         $movie->setMovieName($movie_name);
         $movie->setMoviePrice($movie_price);
@@ -147,24 +156,24 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
         Movie_has_Genre::updateRecords($movie_id, $movie_genres, $em);
         return $movie->getMovieId();
     }
-    
-    public static function remove($movie_id, EntityManager $em){
+
+    public static function remove($movie_id, EntityManager $em) {
         $movie = Movie::getTheMovie($movie_id, $em);
         Movie_has_Genre::removeRecords($movie_id, $em);
         $em->remove($movie);
         $em->flush();
         return 1;
     }
-    
-    
+
     /* Fetching all the movies */
+
     public static function getAllMovies(EntityManager $em) {
         $moviesRepository = $em->getRepository("AppBundle:Movie");
         $query = $em->createQuery('SELECT m FROM AppBundle:Movie m ORDER BY m.movie_name ASC');
         //$movies = $moviesRepository->findAll();
         $movies = $query->getResult();
         if ($movies) {
-            foreach($movies as $movie){
+            foreach ($movies as $movie) {
                 $movie->loadGenres($em);
             }
             return $movies;
@@ -172,8 +181,9 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
             return null;
         }
     }
-    
-    /*Fetching one movie by Id*/
+
+    /* Fetching one movie by Id */
+
     public static function getTheMovie($movieId, EntityManager $em) {
         $moviesRepository = $em->getRepository("AppBundle:Movie");
         $movie = $moviesRepository->find($movieId);
@@ -184,8 +194,9 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
             return null;
         }
     }
-    
+
     /* Register any object to DB */
+
     public static function registerToDB($object, EntityManager $em) {
         try {
             $em->persist($object);
@@ -203,8 +214,7 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
      *
      * @return Movie
      */
-    public function setMoviePrice($moviePrice)
-    {
+    public function setMoviePrice($moviePrice) {
         $this->movie_price = $moviePrice;
 
         return $this;
@@ -215,8 +225,7 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
      *
      * @return integer
      */
-    public function getMoviePrice()
-    {
+    public function getMoviePrice() {
         return $this->movie_price;
     }
 
@@ -227,8 +236,7 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
      *
      * @return Movie
      */
-    public function setMovieImagePath($movieImagePath)
-    {
+    public function setMovieImagePath($movieImagePath) {
         $this->movie_imagePath = $movieImagePath;
 
         return $this;
@@ -239,23 +247,91 @@ public static function register(Array $movie_genres, $movie_name, $movie_price, 
      *
      * @return string
      */
-    public function getMovieImagePath()
-    {
+    public function getMovieImagePath() {
         return $this->movie_imagePath;
     }
-    
+
     /**
      * Get movieGenres
      *
      * @return array
      */
-    public function getMovieGenres()
-    {
+    public function getMovieGenres() {
         return $this->movie_genres;
-    } 
-    
-    /*This function loads all the genres belonging to the movie*/
-    public function loadGenres(EntityManager $em){
+    }
+
+    /* This function loads all the genres belonging to the movie */
+
+    public function loadGenres(EntityManager $em) {
         $this->movie_genres = Movie_has_Genre::getTheGenres($this->movie_id, $em);
+    }
+
+
+    /**
+     * Add purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     *
+     * @return Movie
+     */
+    public function addPurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases[] = $purchase;
+
+        return $this;
+    }
+
+    /**
+     * Remove purchase
+     *
+     * @param \AppBundle\Entity\Purchase $purchase
+     */
+    public function removePurchase(\AppBundle\Entity\Purchase $purchase)
+    {
+        $this->purchases->removeElement($purchase);
+    }
+
+    /**
+     * Get purchases
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPurchases()
+    {
+        return $this->purchases;
+    }
+
+    /**
+     * Add movieHasGenre
+     *
+     * @param \AppBundle\Entity\Movie_has_Genre $movieHasGenre
+     *
+     * @return Movie
+     */
+    public function addMovieHasGenre(\AppBundle\Entity\Movie_has_Genre $movieHasGenre)
+    {
+        $this->movie_has_genres[] = $movieHasGenre;
+
+        return $this;
+    }
+
+    /**
+     * Remove movieHasGenre
+     *
+     * @param \AppBundle\Entity\Movie_has_Genre $movieHasGenre
+     */
+    public function removeMovieHasGenre(\AppBundle\Entity\Movie_has_Genre $movieHasGenre)
+    {
+        $this->movie_has_genres->removeElement($movieHasGenre);
+    }
+
+    /**
+     * Get movieHasGenres
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMovieHasGenres()
+    {
+        return $this->movie_has_genres;
     }
 }

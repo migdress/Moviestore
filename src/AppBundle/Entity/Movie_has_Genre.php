@@ -14,62 +14,25 @@ use AppBundle\Entity\Genre;
  * @ORM\Table(name="Movie_has_Genre")
  */
 class Movie_has_Genre {
-
+    
     /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
+     *
+     * @ORM\ManyToOne(targetEntity="Movie", inversedBy="movie_has_genres")
+     * @ORM\JoinColumn(name="Movie_movie_id", referencedColumnName="movie_id")
+     * @ORM\Id 
      */
-    private $Movie_movie_id;
-
+    private $movie;
+    
     /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
+     *
+     * @ORM\ManyToOne(targetEntity="Genre", inversedBy="movie_has_genres")
+     * @ORM\JoinColumn(name="Genre_genre_id", referencedColumnName="genre_id")
+     * @ORM\Id 
      */
-    private $Genre_genre_id;
-
-    /**
-     * Set movieMovieId
-     *
-     * @param integer $movieMovieId
-     *
-     * @return Movie_has_Genre
-     */
-    public function setMovieMovieId($movieMovieId) {
-        $this->Movie_movie_id = $movieMovieId;
-
-        return $this;
-    }
-
-    /**
-     * Get movieMovieId
-     *
-     * @return integer
-     */
-    public function getMovieMovieId() {
-        return $this->Movie_movie_id;
-    }
-
-    /**
-     * Set genreGenreId
-     *
-     * @param integer $genreGenreId
-     *
-     * @return Movie_has_Genre
-     */
-    public function setGenreGenreId($genreGenreId) {
-        $this->Genre_genre_id = $genreGenreId;
-
-        return $this;
-    }
-
-    /**
-     * Get genreGenreId
-     *
-     * @return integer
-     */
-    public function getGenreGenreId() {
-        return $this->Genre_genre_id;
-    }
+    private $genre;
+    
+   
+/**************************************Beginning of functions **********************************/
 
     /* Fetching genres for a given movie Id */
 
@@ -148,4 +111,52 @@ class Movie_has_Genre {
         return true;
     }
 
+
+    /**
+     * Set movie
+     *
+     * @param \AppBundle\Entity\Movie $movie
+     *
+     * @return Movie_has_Genre
+     */
+    public function setMovie(\AppBundle\Entity\Movie $movie = null)
+    {
+        $this->movie = $movie;
+
+        return $this;
+    }
+
+    /**
+     * Get movie
+     *
+     * @return \AppBundle\Entity\Movie
+     */
+    public function getMovie()
+    {
+        return $this->movie;
+    }
+
+    /**
+     * Set genre
+     *
+     * @param \AppBundle\Entity\Genre $genre
+     *
+     * @return Movie_has_Genre
+     */
+    public function setGenre(\AppBundle\Entity\Genre $genre = null)
+    {
+        $this->genre = $genre;
+
+        return $this;
+    }
+
+    /**
+     * Get genre
+     *
+     * @return \AppBundle\Entity\Genre
+     */
+    public function getGenre()
+    {
+        return $this->genre;
+    }
 }

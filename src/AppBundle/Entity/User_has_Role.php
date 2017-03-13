@@ -15,73 +15,33 @@ use AppBundle\Entity\Genre;
  */
 class User_has_Role {
 
+    
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="user_has_roles")
+     * @ORM\JoinColumn(name="User_user_id", referencedColumnName="user_id")
      * @ORM\Id
      */
-    private $User_user_id;
-
+    private $user;
+    
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="Role", inversedBy="user_has_roles")
+     * @ORM\JoinColumn(name="Role_role_id", referencedColumnName="role_id")
      * @ORM\Id
      */
-    private $Role_role_id;
+    private $role;
     
     /**********************Beginning of functions*****************************/
-
-    /**
-     * Set userUserId
-     *
-     * @param integer $userUserId
-     *
-     * @return User_has_Role
-     */
-    public function setUserUserId($userUserId) {
-        $this->User_user_id = $userUserId;
-
-        return $this;
-    }
-
-    /**
-     * Get userUserId
-     *
-     * @return integer
-     */
-    public function getUserUserId() {
-        return $this->User_user_id;
-    }
-
-    /**
-     * Set roleRoleId
-     *
-     * @param integer $roleRoleId
-     *
-     * @return User_has_Role
-     */
-    public function setRoleRoleId($roleRoleId) {
-        $this->Role_role_id = $roleRoleId;
-
-        return $this;
-    }
-
-    /**
-     * Get roleRoleId
-     *
-     * @return integer
-     */
-    public function getRoleRoleId() {
-        return $this->Role_role_id;
-    }
 
     /* Fetching roles for a given user Id */
     public static function getTheRoles($userId, EntityManager $em) {
         $repository = $em->getRepository("AppBundle:User_has_Role");
-        $result = $repository->findBy(["User_user_id" => $userId]);
+        //$result = $repository->findBy(["User_user_id" => $userId]);
+        $result = $repository->findBy(["user" => $userId]);
         if ($result) {
             $userRoles = array();
             $i = 0;
             foreach ($result as $record) {
-                $userRoles[$i] = Role::getTheRole($record->getRoleRoleId(), $em);
+                $userRoles[$i] = Role::getTheRole($record->getRole(), $em);
                 $i++;
             }
             return $userRoles;
@@ -148,4 +108,52 @@ class User_has_Role {
         return true;
     }
 
+
+    /**
+     * Set user
+     *
+     * @param \AppBundle\Entity\User $user
+     *
+     * @return User_has_Role
+     */
+    public function setUser(\AppBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \AppBundle\Entity\User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set role
+     *
+     * @param \AppBundle\Entity\Role $role
+     *
+     * @return User_has_Role
+     */
+    public function setRole(\AppBundle\Entity\Role $role = null)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return \AppBundle\Entity\Role
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
 }
