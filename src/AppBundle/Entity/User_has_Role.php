@@ -10,7 +10,7 @@ use AppBundle\Entity\Movie;
 use AppBundle\Entity\Genre;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\User_has_RoleRepository")
  * @ORM\Table(name="User_has_Role")
  */
 class User_has_Role {
@@ -52,7 +52,7 @@ class User_has_Role {
     
     public static function getTheUser_has_RoleRecords($userId, EntityManager $em) {
         $repository = $em->getRepository("AppBundle:User_has_Role");
-        $records = $repository->findBy(["User_user_id" => $userId]);
+        $records = $repository->findBy(["user" => $userId]);
         if ($records) {
             return $records;
         } else {
@@ -86,10 +86,12 @@ class User_has_Role {
         return 1;
     }
 
-    public static function removeRecords($user_id, EntityManager $em) {
+    public static function removeRecords($user_id, EntityManager $em, $logger = null)  {
         $currentRecords = User_has_Role::getTheUser_has_RoleRecords($user_id, $em);
+        if($logger!=null){$logger->info("METHOD: 'User_has_Role.removeRecords => CALLED");}
         if ($currentRecords) {
             foreach ($currentRecords as $currentRecord) {
+                if($logger){$logger->info("METHOD: 'User_has_Role.removeRecords => Found userId: ".$currentRecord->getUser()->getUserId()." Found RoleId: ".$currentRecord->getRole()->getRoleId());}
                 $em->remove($currentRecord);
             }
         }

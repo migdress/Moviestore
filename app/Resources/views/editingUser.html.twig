@@ -26,21 +26,25 @@
                     </tr>
                     <tr>
                         <td>User login:</td>
-                        <td><input type="text" name="updateUserLogin" value="{{ user.userLogin}}"></td>
+                        <td><input type="text" name="updateUserLogin" value="{{ user.userName}}"></td>
                     </tr>
                     <tr>
                         <td>User NEW password:</td>
                         <td><input type="password" name="updateUserPassword" placeholder="Let blank to not update"></td>
                     </tr>
                     <tr>
+                        <td>User email:</td>
+                        <td><input type="text" name="updateUserEmail" value="{{user.userEmail}}"></td>
+                    </tr>
+                    <tr>
                         <td>User type:</td>
                         <td><select name="updateUserType">
-                                {% if user.userType == constant('USER_TYPE_ADMIN', constants) %}
-                                    <option value="CLIENT">Client</option>
-                                    <option selected = "selected" value="ADMIN">Admin</option>
+                                {% if user.userRoles == constant('USER_TYPE_ADMIN', constants) %}
+                                    <option value="2">Client</option>
+                                    <option selected = "selected" value="1">Admin</option>
                                 {% else%}
-                                    <option selected = "selected" value="CLIENT">Client</option>
-                                    <option value="ADMIN">Admin</option>
+                                    <option selected = "selected" value="2">Client</option>
+                                    <option value="1">Admin</option>
                                 {%endif%}
                             </select></td>
                     </tr>

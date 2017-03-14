@@ -56,6 +56,8 @@ security:
             logout: 
                 path: /logout
                 target: /home
+                #The line below allows to custom the logout handler
+                invalidate_session: false
             security: true
         
         
@@ -74,7 +76,7 @@ security:
                 
                 
     access_control:
-    - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/, roles: ROLE_ADMIN }
     - { path: ^/, roles: ROLE_USER }
             

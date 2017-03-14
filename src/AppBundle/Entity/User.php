@@ -66,15 +66,11 @@ class User implements UserInterface, \Serializable{
      */
     private $user_isActive;
 
-    /* This is not a property of the table in the DB, is an attribute whose function
-        is hold the role strings */
-    private $user_roles = array();
-
     //*******************************Beginning of functions************************************
 
     
     public function __construct(){
-        $this->products = new ArrayCollection();
+        $this->purchases = new ArrayCollection();
         $this->user_has_roles = new ArrayCollection();
         $this->isActive = true;
         // may not be needed, see section on salt below
@@ -199,132 +195,6 @@ class User implements UserInterface, \Serializable{
     public function getUserRoles() {
         return implode(",",$this->getRoles());
     }
-
-    
-    
-    /* Old login method, Previous to the symfony security system */
-    public static function login($userLogin, $userPassword, EntityManager $em) {
-        $userRepository = $em->getRepository("AppBundle:User");
-        /* Trying to find the User */
-        if ($user = $userRepository->findOneBy(array(
-            "user_username" => $userLogin
-                ))) {
-            if ($user->getPassword() == sha1($userPassword)) {
-                $return = $user;
-                return $return;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    /* Get all users method */
-
-    public static function getAllUsers(EntityManager $em) {
-        $usersRepository = $em->getRepository("AppBundle:User");
-        $users = $usersRepository->findAll();
-        if ($users) {
-            return $users;
-        } else {
-            return null;
-        }
-    }
-
-    public static function register($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_email, $user_type, EntityManager $em) {        
-        $user = new User();
-        $user->setUserId($user_id);
-        $user->setUserName($user_name);
-        $user->setUserLastName($user_lastName);
-        $user->setUserUsername($user_login);
-        $user->setUserPassword(sha1($user_password));
-        $user->setUserEmail($user_email);
-        $user->setUserIsActive(true);
-        User::registerToDB($user, $em);
-        $userHasRole = new User_has_Role();
-        $userHasRole->setRole(Role::getTheRole($user_type, $em));
-        $userHasRole->setUser($user);
-        $user->addUserHasRole($userHasRole);
-        $em->flush();
-        return 1;
-    }
-    
-    public static function update($user_id, $user_name, $user_lastName, $user_login, $user_password, $user_email, $user_type, EntityManager $em){
-        $user = User::getTheUser($user_id, $em);
-        $user->setUserName($user_name);
-        $user->setUserLastName($user_lastName);
-        $user->setUserUsername($user_login);
-        if($user_password != ""){
-            $user->setUserPassword(sha1($user_password));
-        }
-        $user->setUserEmail($user_email);
-        $currentRole = $user->getUserHasRoles();
-        if (!$currentRole[0]->getRole()->getRoleId() == $user_type) {
-            User_has_Role::removeRecords($user_id, $em);
-            $userHasRole = new User_has_Role();
-            $userHasRole->setRole(Role::getTheRole($user_type, $em));
-            $userHasRole->setUser($user);
-            $user->addUserHasRole($userHasRole);
-        }
-        $em->flush();
-        return 1;
-    }
-
-    /* Register any object to DB */
-    public static function registerToDB($object, EntityManager $em) {
-        try {
-            $em->persist($object);
-            $em->flush();
-        } catch (Exeption $e) {
-            return false;
-        }
-        return true;
-    }
-    
-    /*Fetching one user by Id*/
-    public static function getTheUser($userId, EntityManager $em) {
-        $userRepository = $em->getRepository("AppBundle:User");
-        $user = $userRepository->find($userId);
-        if ($user) {
-            return $user;
-        } else {
-            return null;
-        }
-    }
-    
-    /*Remove user from database*/
-    public static function remove($user_id, EntityManager $em){
-        $user = User::getTheUser($user_id, $em);
-        $em->remove($user);
-        $em->flush();
-        return 1;
-    }
-    
-    public function loadRoles(EntityManager $em){
-        $userRoles = User_has_Role::getTheRoles($this->user_id, $em);
-        if($userRoles){
-            $i = 0;
-            foreach($userRoles as $userRole){
-                $this->user_roles[$i] = $userRole->getRoleString();
-                $i++;
-            }
-        }
-    }
-    
-    /*This function has to be called after calling loadRoles()*/
-    public function hasTheRole($ROLE_STRING){
-        if ($this->user_roles != null) {
-            foreach ($this->user_roles as $role) {
-                if ($role == $ROLE_STRING) {
-                    return true;
-                }
-            }
-        } else {
-            return false;
-        }
-    }
-    
     
     /******************* These functions need to be declared to comply with the interface implementation*************/
     
@@ -337,6 +207,17 @@ class User implements UserInterface, \Serializable{
         }
         
         return $rolesArray;
+    }
+    
+    public function hasTheRole($roleString, $logger = null){
+        $rolesArray = $this->getRoles();
+        foreach($rolesArray as $role){
+            if($logger!=null){$logger->info("METHOD: 'User.hasTheRole' => asking for: ".$roleString." got: ".$role);}
+            if($roleString == $role){
+                return true;
+            }
+        }
+        return false;
     }
     
     public function eraseCredentials(){

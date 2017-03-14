@@ -18,22 +18,17 @@ class MovieController extends Controller {
      * @Route("/manageMovies", name="manageMovies")
      */
     public function manageMoviesAction(Request $request) {
-        $user = $request->getSession()->get("user");
-        if ($user != null) {
-            if ($user->getUserType() == "ADMIN") {
-                return $this->render("manageMovies.html.twig", [
-                            "user" => $user,
-                            "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                            "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
-                            "constants" => Constants::get()
-                ]);
-            } else {
-                $this->addFlash("error", "You are not allowed to be here!");
-                return $this->render("accout.html.twig", ["constants" => Constants::get()]);
-            }
+        //$user = $this->container->get("securityController")->validateSession();
+        $user = $this->getUser();
+        if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
+            return $this->render("manageMovies.html.twig", [
+                        "movies" => $this->getAllMoviesFromDB(),
+                         "genres" => $this->getAllGenresFromDB(),
+                        "constants" => Constants::get()
+            ]);
         } else {
-            $this->addFlash("error", "Please log in to you account");
-            return $this->render("login.html.twig", ["constants" => Constants::get()]);
+            $this->addFlash("error", "You are not authenticated, please login");
+            return $this->redirectToRoute("logout");
         }
     }
 
@@ -41,32 +36,30 @@ class MovieController extends Controller {
      * @Route("/registerMovie", name="registerMovie")
      */
     public function registerMovieAction(Request $request) {
-        $user = $request->getSession()->get("user");
-        if ($user != null) {
+        $user = $this->getUser();
+        if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $imageFile = $request->files->get("registerMovieImage");
             $imageName = null;
-            if($imageFile != null){
-                $imageName =$request->request->get("registerMovieName").".".$imageFile->guessExtension();
+            if ($imageFile != null) {
+                $imageName = $request->request->get("registerMovieName") . "." . $imageFile->guessExtension();
             }
-            $resultFlag = Movie::register($request->request->get("registerMovieGenres"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $imageName, $request->request->get("registerMovieDesc"), $this->getDoctrine()->getManager());
-            if ($resultFlag > 0 ){
-                if($imageFile != null){
-                $imageFile->move(Constants::DIR_MOVIE_IMAGES, $imageName);
+            $resultFlag = $this->saveMovieToDB($request->request->get("registerMovieGenres"), $request->request->get("registerMovieName"), $request->request->get("registerMoviePrice"), $imageName, $request->request->get("registerMovieDesc"));
+            if ($resultFlag > 0) {
+                if ($imageFile != null) {
+                    $imageFile->move(Constants::DIR_MOVIE_IMAGES, $imageName);
                 }
                 $this->addFlash("notice", "The movie " . $request->request->get("registerMovieName") . " has been registered succesfuly");
-            }
-            else {
+            } else {
                 $this->addFlash("error", "An error ocurred, movie not registered");
             }
             return $this->render("manageMovies.html.twig", array(
-                        "user" => $user,
-                        "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
+                        "movies" => $this->getAllMoviesFromDB(),
+                        "genres" => $this->getAllGenresFromDB(),
                         "constants" => Constants::get()
             ));
         } else {
-            $this->addFlash("error", "Please login to your account");
-            return $this->render("accout.html.twig", ["constants" => Constants::get()]);
+            $this->addFlash("error", "You are not authenticated, please login");
+            return $this->redirectToRoute("logout");
         }
     }
 
@@ -74,18 +67,17 @@ class MovieController extends Controller {
      * @Route("/editMovie/{movieId}", name="editMovie", requirements={"movieId": "\d+"})
      */
     public function editMovieAction(Request $request, $movieId) {
-        $user = $request->getSession()->get("user");
-        if ($user != null) {
-            $movie = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager());
+        $user = $this->getUser();
+        if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
+            $movie = $this->getTheMovieFromDB($movieId);
             return $this->render(Constants::VIEW_EDIT_MOVIE, [
-                        "user" => $user,
                         "movie" => $movie,
-                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
+                        "genres" => $this->getAllGenresFromDB(),
                         "constants" => Constants::get()
             ]);
         } else {
-            $this->addFlash("error", "please login to your account");
-            $this->render("login.html.twig", ["constants" => Constants::get()]);
+            $this->addFlash("error", "You are not authenticated, please login");
+            return $this->redirectToRoute("logout");
         }
     }
 
@@ -93,19 +85,19 @@ class MovieController extends Controller {
      * @Route("/updateMovie", name="updateMovie")
      */
     public function updateMovieAction(Request $request) {
-        $user = $request->getSession()->get("user");
-        if ($user != null) {
+        $user = $this->getUser();
+        if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $imageFile = $request->files->get("updateMovieImage");
             $imageName = null;
-            if($imageFile != null){
-                $imageName =$request->request->get("updateMovieName").".".$imageFile->guessExtension();
+            if ($imageFile != null) {
+                $imageName = $request->request->get("updateMovieName") . "." . $imageFile->guessExtension();
             }
-            $resultFlag = Movie::update($request->request->get("updateMovieId"), $request->request->get("updateMovieGenres"), $request->request->get("updateMovieName"), $request->request->get("updateMoviePrice"), $imageName, $request->request->get("updateMovieDesc"), $this->getDoctrine()->getManager());
+            $resultFlag = $this->UpdateMovieToDB($request->request->get("updateMovieId"), $request->request->get("updateMovieGenres"), $request->request->get("updateMovieName"), $request->request->get("updateMoviePrice"), $imageName, $request->request->get("updateMovieDesc"));
             if ($resultFlag > 0) {
                 if ($imageFile != null) {
                     $fs = $this->get("filesystem");
-                    if ($fs->exists(Constants::DIR_MOVIE_IMAGES."/".$imageName)) {
-                        $fs->remove(Constants::DIR_MOVIE_IMAGES."/".$imageName);
+                    if ($fs->exists(Constants::DIR_MOVIE_IMAGES . "/" . $imageName)) {
+                        $fs->remove(Constants::DIR_MOVIE_IMAGES . "/" . $imageName);
                     }
                     $imageFile->move(Constants::DIR_MOVIE_IMAGES, $imageName);
                 }
@@ -115,13 +107,13 @@ class MovieController extends Controller {
             }
             return $this->render("manageMovies.html.twig", [
                         "user" => $user,
-                        "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
+                        "movies" => $this->getAllMoviesFromDB(),
+                        "genres" => $this->getAllGenresFromDB(),
                         "constants" => Constants::get()
             ]);
         } else {
-            $this->addFlash("error", "Please login to your account");
-            $this->render("login.html.twig", ["constants" => Constants::get()]);
+            $this->addFlash("error", "You are not authenticated, please login");
+            return $this->redirectToRoute("logout");
         }
     }
 
@@ -129,11 +121,11 @@ class MovieController extends Controller {
      * @Route("/removeMovie/{movieId}", name="removeMovie", requirements={"page": "\d+"})
      */
     public function removeMovieAction(Request $request, $movieId) {
-        $user = $request->getSession()->get("user");
-        if ($user != null) {
-            $movieName = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager())->getMovieName();
-            $imageName = Movie::getTheMovie($movieId, $this->getDoctrine()->getManager())->getMovieImagePath();
-            $resultFlag = Movie::remove($movieId, $this->getDoctrine()->getManager());
+        $user = $this->getUser();
+        if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
+            $movieName = $this->getTheMovieFromDB($movieId)->getMovieName();
+            $imageName = $this->getTheMovieFromDB($movieId)->getMovieImagePath();
+            $resultFlag = $this->removeTheMovieFromDB($movieId);
             if ($resultFlag == 1) {
                 if ($imageName != null) {
                     $fs = $this->get("filesystem");
@@ -145,13 +137,13 @@ class MovieController extends Controller {
             }
             return $this->render("manageMovies.html.twig", array(
                         "user" => $user,
-                        "movies" => Movie::getAllMovies($this->getDoctrine()->getManager()),
-                        "genres" => Genre::getAllGenres($this->getDoctrine()->getManager()),
+                        "movies" => $this->getAllMoviesFromDB(),
+                        "genres" => $this->getAllGenresFromDB(),
                         "constants" => Constants::get()
             ));
         } else {
-            $this->addFlash("error", "Please login to your account");
-            $this->render("login.html.twig", ["constants" => Constants::get()]);
+            $this->addFlash("error", "You are not authenticated, please login");
+            return $this->redirectToRoute("logout");
         }
     }
 
@@ -237,6 +229,85 @@ class MovieController extends Controller {
             $this->addFlash("error", "You are not allowed to be here!");
             return $this->render("login.html.twig");
         }
+    }
+
+
+    private function saveMovieToDB(Array $movie_genres, $movie_name, $movie_price, $imageName, $movie_desc) {
+        $genreRepository = $this->getDoctrine()->getManager()->getRepository("AppBundle:Genre");
+        $movie = new Movie();
+        $movie->setMovieName($movie_name);
+        $movie->setMoviePrice($movie_price);
+        $movie->setMovieDesc($movie_desc);
+        $this->getDoctrine()->getManager()->persist($movie);
+        foreach ($movie_genres as $movie_genre) {
+            $movie_has_genre = new Movie_has_Genre();
+            $movie_has_genre->setGenre($genreRepository->find($movie_genre));
+            $movie_has_genre->setMovie($movie);
+            $movie->addMovieHasGenre($movie_has_genre);
+            $em->flush();
+        }
+        if ($imageName != null) {
+            $movie->setMovieImagePath($imageName);
+        }
+        $em->flush();
+        return $movie->getMovieId();
+    }
+
+    private function getTheMovieFromDB($movieId) {
+        $movieRepository = $this->getDoctrine()->getManager()->getRepository("AppBundle:Movie");
+        return $movieRepository->find($movieId);
+    }
+
+    private function updateMovieToDB($movie_id, Array $movie_genres = null, $movie_name, $movie_price, $imageName, $movie_desc) {
+        $movie = $this->getTheMovieFromDB($movie_id);
+        $movie->setMovieName($movie_name);
+        $movie->setMoviePrice($movie_price);
+        $movie->setMovieDesc($movie_desc);
+        if ($imageName != null) {
+            $movie->setMovieImagePath($imageName);
+        }
+        if ($movie_genres) {
+            $this->removeAllMovieGenres($movie_id);
+            foreach ($movie_genres as $movie_genre) {
+                $movie_has_genre = new Movie_has_Genre();
+                $movie_has_genre->setGenre(Genre::getTheGenre($movie_genre, $em));
+                $movie_has_genre->setMovie($movie);
+                $movie->addMovieHasGenre($movie_has_genre);
+                $this->getDoctrine()->getManager()->flush();
+            }
+        }
+        $em->flush();
+        return $movie->getMovieId();
+    }
+
+    private function removeTheMovieFromDB($movieId) {
+        $movie = Movie::getTheMovie($movie_id, $em);
+        $this->removeAllMovieGenres($movieId);
+        $em->remove($movie);
+        $em->flush();
+        return 1;
+    }
+
+    private function removeAllMovieGenres($movieId) {
+        $movie_has_genreRepository = $this->getDoctrine()->getManager()->getRepository("AppBundle:Movie_has_Genre");
+        $records = $movie_has_genreRepository->findBy(["movie" => $movieId]);
+        foreach ($records as $record) {
+            $this->getDoctrine()->getManager()->remove($record);
+        }
+        $this->getDoctrine()->getManager()->flush();
+        return 1;
+    }
+
+    private function getAllMoviesFromDB() {
+        $movieRepository = $this->getDoctrine()->getManager()->getRepository("AppBundle:Movie");
+        $movies = $movieRepository->getAllMovies();
+        return $movies;
+    }
+
+    private function getAllGenresFromDB() {
+        $genreRepository = $this->getDoctrine()->getManager()->getRepository("AppBundle:Genre");
+        $genres = $genreRepository->getAllGenres();
+        return $genres;
     }
 
 }

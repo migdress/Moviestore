@@ -54,7 +54,7 @@ class Movie_has_Genre {
 
     public static function getTheMovie_has_GenreRecords($movieId, EntityManager $em) {
         $repository = $em->getRepository("AppBundle:Movie_has_Genre");
-        $records = $repository->findBy(["Movie_movie_id" => $movieId]);
+        $records = $repository->findBy(["movie" => $movieId]);
         if ($records) {
             return $records;
         } else {
