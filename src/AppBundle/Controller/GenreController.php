@@ -15,7 +15,7 @@ class GenreController extends Controller {
      * @Route("/manageGenres", name="manageGenres")
      */
     public function manageGenresAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $genres = $this->getAllGenresFromDB();
             return $this->render(Constants::VIEW_MANAGE_GENRES, array(
@@ -32,7 +32,7 @@ class GenreController extends Controller {
      * @Route("/registerGenre", name="registerGenre")
      */
     public function registerGenreAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $resultFlag = $this->saveGenreToDB($request->request->get("registerGenreName"));
             if ($resultFlag == 1) {
@@ -54,7 +54,7 @@ class GenreController extends Controller {
      * @Route("/editGenre/{genreId}", name="editGenre", requirements={"genreId": "\d+"})
      */
     public function editGenreAction(Request $request, $genreId) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $genreEdit = $this->getTheGenreFromDB($genreId);
             return $this->render(Constants::VIEW_EDIT_GENRE, ["constants" => Constants::get(),
@@ -69,7 +69,7 @@ class GenreController extends Controller {
      * @Route("/updateGenre", name="updateGenre")
      */
     public function updateGenreAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $resultFlag = $this->updateGenreToDB($request->request->get("updateGenreId"), $request->request->get("updateGenreName"));
             if ($resultFlag == 1) {
@@ -91,7 +91,7 @@ class GenreController extends Controller {
      * @Route("/removeGenre/{genreId}", name="removeGenre", requirements={"genreId": "\d+"})
      */
     public function removeGenreAction(Request $request, $genreId) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $genreRemoveName = $this->getTheGenreFromDB($genreId)->getGenreName();
             $resultFlag = $this->removeGenreFromDB($genreId);
@@ -107,26 +107,6 @@ class GenreController extends Controller {
         } else {
             $this->addFlash("error", "You are not authenticated, please login");
             return $this->redirectToRoute("logout");
-        }
-    }
-    
-    public function validateSession() {
-        /* This line allows to check if the user is authenticated */
-        if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            /* The line below should return the user object if authenticated */
-            #$userSession = $this->get('security.token_storage')->getToken()->getUser();
-            $this->get("logger")->info("User is authenticated fully");
-            $userSession = $this->getUser(); #this line is a shortcut for the one commented above
-            if ($userSession != null) {
-                //$userSession->loadRoles($this->getDoctrine()->getManager());
-                $this->get("logger")->info("User session is not null");
-                $this->get("logger")->info("Roles: ".implode(",",$userSession->getRoles()));
-                return $userSession;
-            } else {
-                return null;
-            }
-        } else {
-            throw $this->createAccessDeniedException();
         }
     }
     

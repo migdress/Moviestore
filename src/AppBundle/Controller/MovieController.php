@@ -18,7 +18,6 @@ class MovieController extends Controller {
      * @Route("/manageMovies", name="manageMovies")
      */
     public function manageMoviesAction(Request $request) {
-        //$user = $this->container->get("securityController")->validateSession();
         $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             return $this->render("manageMovies.html.twig", [

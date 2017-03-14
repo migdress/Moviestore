@@ -17,7 +17,7 @@ class UserController extends Controller {
      * @Route("/loginSuccess", name="loginSuccess")
      */
     public function loginSuccessAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         $pageToRender = "";
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN, $this->get("logger"))) {
             $pageToRender = "admin.html.twig";
@@ -32,58 +32,12 @@ class UserController extends Controller {
         ]);
     }
 
-    public function validateSession() {
-        /* This line allows to check if the user is authenticated */
-        if ($this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-            /* The line below should return the user object if authenticated */
-            #$userSession = $this->get('security.token_storage')->getToken()->getUser();
-            $this->get("logger")->info("User is authenticated fully");
-            $userSession = $this->getUser(); #this line is a shortcut for the one commented above
-            if ($userSession != null) {
-                //$userSession->loadRoles($this->getDoctrine()->getManager());
-                $this->get("logger")->info("User session is not null");
-                $this->get("logger")->info("Roles: ".implode(",",$userSession->getRoles()));
-                return $userSession;
-            } else {
-                return null;
-            }
-        } else {
-            throw $this->createAccessDeniedException();
-        }
-    }
-
-    #/**
-    # * @Route("/loginAttempt", name="loginAttempt")
-    # */
-    #public function loginAttemptAction(Request $request) {
-    #    $userLogin = $request->request->get("login");
-    #    $userPassword = $request->request->get("password");
-    #    $user = User::login($userLogin, $userPassword, $this->getDoctrine()->getManager());
-    #    $pageToRender = "";
-    #    if ($user) {
-    #        $request->getSession()->set("user", $user);
-    #        if ($user->getUserType() == Constants::USER_TYPE_ADMIN) {
-    #            $pageToRender = "admin.html.twig";
-    #        } else {
-    #           $pageToRender = "account.html.twig";
-    #        }
-    #        return $this->render($pageToRender, array(
-    #                    "user" => $user,
-    #                    "constants" => Constants::get()
-    #        ));
-    #    } else {
-    #        $this->addFlash("error", "Invalid data");
-    #        return $this->render("login.html.twig", [
-    #                    "constants" => Constants::get()
-    #        ]);
-    #    }
-    #}
 
     /**
      * @Route("/admin", name="admin")
      */
     public function adminAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             return $this->render("admin.html.twig", array(
                         "user" => $user,
@@ -99,7 +53,7 @@ class UserController extends Controller {
      * @Route("/account", name="account")
      */
     public function accountAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_CLIENT)) {
             return $this->render("account.html.twig", [
                         "user" => $user,
@@ -115,7 +69,7 @@ class UserController extends Controller {
      * @Route("/manageUsers", name="manageUsers")
      */
     public function manageUsersAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN, $this->get("logger"))) {
             $users = $this->getAllUsersFromDB();
             return $this->render("manageUsers.html.twig", array(
@@ -132,7 +86,7 @@ class UserController extends Controller {
      * @Route("/registerUser", name="registerUser")
      */
     public function registerUserAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $resultFlag = $this->saveUserToDB($request->request->get("registerUserId"), $request->request->get("registerUserName"), $request->request->get("registerUserLastame"), $request->request->get("registerUserLogin"), $request->request->get("registerUserPassword"), $request->request->get("registerUserEmail"), $request->request->get("registerUserType"));
             if ($resultFlag == 1) {
@@ -154,7 +108,7 @@ class UserController extends Controller {
      * @Route("/editUser/{userId}", name="editUser", requirements={"userId": "\d+"})
      */
     public function editUserAction(Request $request, $userId) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $userEdit = $this->getTheUserFromDB($userId);
             return $this->render(Constants::VIEW_EDIT_USER, [
@@ -170,7 +124,7 @@ class UserController extends Controller {
      * @Route("/updateUser", name="updateUser")
      */
     public function updateUserAction(Request $request) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $resultFlag = $this->updateUserToDB($request->request->get("updateUserId"), $request->request->get("updateUserName"), $request->request->get("updateUserLastname"), $request->request->get("updateUserLogin"), $request->request->get("updateUserPassword"), $request->request->get("updateUserEmail"), $request->request->get("updateUserType"));
             if ($resultFlag == 1) {
@@ -192,7 +146,7 @@ class UserController extends Controller {
      * @Route("/removeUser/{userId}", name="removeUser", requirements={"userId": "\d+"})
      */
     public function removeUserAction(Request $request, $userId) {
-        $user = $this->validateSession();
+        $user = $this->getUser();
         if ($user != null && $user->hasTheRole(Constants::USER_TYPE_ADMIN)) {
             $userRemoveName = $this->getTheUserFromDB($userId)->getUserName();
             $resultFlag = $this->removeUserFromDB($userId);
