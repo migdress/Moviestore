@@ -41,7 +41,7 @@ class SecurityController extends Controller {
      * @Route("/logout", name="logout")
      */
     public function logoutAction(Request $request) {
-
+    }
     /**
      * @Route("/register", name="register")
      */
