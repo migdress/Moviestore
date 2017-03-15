@@ -283,7 +283,8 @@ class UserController extends Controller {
         $user->setUserName($user_name);
         $user->setUserLastName($user_lastName);
         $user->setUserUsername($user_login);
-        $user->setUserPassword(sha1($user_password));
+        $encoder = $this->get("security.encoder_factory")->getEncoder($user);
+        $user->setUserPassword($encoder->encodePassword($user_password,$user->getSalt()));
         $user->setUserEmail($user_email);
         $user->setUserIsActive(true);
         $this->getDoctrine()->getManager()->persist($user);
